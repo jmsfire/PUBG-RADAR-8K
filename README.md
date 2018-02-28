@@ -2,7 +2,7 @@
 
 ### Скачать скомпилированную версию
 
-https://github.com/FutureXpo/VMRadar/releases
+https://github.com/FutureXpo/PUBG-RADAR-4K/releases
 
 ### Небольшая заметка
 
