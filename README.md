@@ -1,40 +1,44 @@
-# PUBG-Radar ![Imgur](https://i.imgur.com/n3JtN5d.png)
+# PUBG-Radar 
 
-#### By engaging with this repository you explicitly agree with the terms of the Unlicense.
+### Скачать скомпилированную версию
 
-https://github.com/SamuelNZ/VMRadar/releases
+https://github.com/FutureXpo/VMRadar/releases
 
-![Imgur](https://i.imgur.com/6dZGFen.gif)
+### Небольшая заметка
 
-This version runs without the spoofing shit in a VM.
+Нельзя фильтровать третий сет брони
 
-'Fixed' the item locations, still working on it.
+#### Item Filter - Фильтры:
+>NUMPAD_0 -> Filter Weapon - Показать/Скрыть оружие
 
-### Key Kinds
-You can't filter level 3 gear (always enabled)
+>NUMPAD_1 -> Filter Attachments - Показать/Скрыть обвесы
 
-#### Item Filter:
-* HOME -> Show / Hide Compass
-* NUMPAD_0 -> Filter Throwables
-* NUMPAD_1 -> Filter Weapon
-* NUMPAD_2 -> Filter Attachments
-* NUMPAD_3 -> Filter Level 2
-* NUMPAD_4 -> Filter Scopes
-* NUMPAD_5 -> Filter Meds
-* NUMPAD_6 -> Filter Ammo
+>NUMPAD_2 -> Filter Scopes - Показать/Скрыть прицелы
+
+>NUMPAD_3 -> Filter Ammo - Показать/Скрыть патроны
+
+>NUMPAD_4 -> Filter Level 2 - Показать/Скрыть броню второго уровня
+
+>NUMPAD_5 -> Filter Heals - Показать/Скрыть хилы
+
+>NUMPAD_6 -> Filter Grenades - Показать/Скрыть гранаты
+
+>DEL -> Filter Names - Показать/Скрыть имена игроков
 
 #### Zooms:
-* NUMPAD_7 -> Scouting
-* NUMPAD_8 -> Scout/Loot
-* NUMPAD_9 -> Looting
+>NUMPAD_7 -> Scouting - Обзор
+
+>NUMPAD_8 -> Scout/Loot - Обзор/Лут
+
+>NUMPAD_9 -> Looting - Лут
 
 ### Online Mode:
-`java -jar target\pubg-radar-1.0-SNAPSHOT-jar-with-dependencies.jar "Middle PC IP" PortFilter "Game PC IP"`
+
+`java -jar target\pubg-radar-1.0-SNAPSHOT-jar-with-dependencies.jar 192.168.1.70 PortFilter 192.168.1.67`
 
 ### Offline Mode:
-You can replay a PCAP file in offline mode:
 
-`java -jar target\pubg-radar-1.0-SNAPSHOT-jar-with-dependencies.jar "Middle PC IP" PortFilter "Game PC IP" Offline`
+`java -jar target\pubg-radar-1.0-SNAPSHOT-jar-with-dependencies.jar 192.168.1.70 PortFilter 192.168.1.67 Offline`
 
 ## Build
 Using [maven](https://maven.apache.org/) or [JetBrains](https://www.jetbrains.com/idea/)
@@ -64,5 +68,4 @@ Using [maven](https://maven.apache.org/) or [JetBrains](https://www.jetbrains.co
 
 
 #### You can find detailed instructions on how to run a maven project [here](https://maven.apache.org/run.html)
-
 
