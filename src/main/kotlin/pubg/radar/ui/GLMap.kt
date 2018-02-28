@@ -546,7 +546,7 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
         weaponsToFilter = if (filterWeapon != 1) {
             arrayListOf("")
         } else {
-            arrayListOf("M16", "M4", "98k", "Scar", "Ak", "Sks", "Mini", "DP28", "Ump", "Vector", "Pan")
+            arrayListOf("M16A4", "M416", "98k", "Scar", "Ak", "Sks", "Mini", "DP28", "Ump", "Vector", "Pan")
         }
 
         healsToFilter = if (filterHeals != 1) {
