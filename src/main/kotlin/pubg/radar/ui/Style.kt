@@ -8,7 +8,7 @@ const val windowToMapUnit = mapWidth / initialWindowWidth
 
 const val runSpeed = 6.3 * 100//6.3m/s
 //1m=100
-const val playerRadius = 4000f
+const val playerRadius = 8000f
 const val vehicle2Width = 400f
 const val vehicle4Width = 800f
 const val vehicle6Width = 1600f

@@ -60,10 +60,10 @@ class Icons(sheet: Texture, size: Int) {
             "Dp" to arrayOf(4, 7),
             "M249" to arrayOf(5, 7),
             // 8 ARs
-            "M16" to arrayOf(0, 8),
+            "M16A4" to arrayOf(0, 8),
             "Ak" to arrayOf(1, 8),
             "Scar" to arrayOf(2, 8),
-            "M4" to arrayOf(3, 8),
+            "M416" to arrayOf(3, 8),
             "Groza" to arrayOf(4, 8),
             "Aug" to arrayOf(5, 8),
             // 9 Rifles

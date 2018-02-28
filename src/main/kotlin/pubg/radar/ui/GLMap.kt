@@ -3,7 +3,7 @@ package pubg.radar.ui
 import com.badlogic.gdx.ApplicationListener
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input.Buttons.*
-import com.badlogic.gdx.Input.Keys.HOME
+import com.badlogic.gdx.Input.Keys.DEL
 import com.badlogic.gdx.Input.Keys.NUMPAD_0
 import com.badlogic.gdx.Input.Keys.NUMPAD_1
 import com.badlogic.gdx.Input.Keys.NUMPAD_2
@@ -115,8 +115,8 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
         config.useOpenGL3(false, 3, 2)
         config.setWindowedMode(800, 800)
         config.setResizable(true)
-        config.useVsync(false)
-        config.setIdleFPS(120)
+    //    config.useVsync(false)
+        config.setIdleFPS(30)
         config.setBackBufferConfig(8, 8, 8, 8, 16, 0, 8)
         Lwjgl3Application(this, config)
     }
@@ -148,9 +148,9 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
     private lateinit var compaseFontShadow: BitmapFont
 
 
-    private val tileZooms = listOf("256", "512", "1024", "2048"/*, "4096"*/)
-    private val tileRowCounts = listOf(1, 2, 4, 8, 16/*, 32*/)
-    private val tileSizes = listOf(819200f, 409600f, 204800f, 102400f/*, 51200f*/)
+    private val tileZooms = listOf("256", "512", "1024", "2048", "4096")
+    private val tileRowCounts = listOf(1, 2, 4, 8, 16, 32)
+    private val tileSizes = listOf(819200f, 409600f, 204800f, 102400f, 51200f)
 
     private val layout = GlyphLayout()
     private var windowWidth = initialWindowWidth
@@ -163,10 +163,10 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
     private var filterAttach = 1
     private var filterLvl2 = -1
     private var filterScope = -1
-    private var filterHeals = -1
-    private var filterAmmo = -1
-    private var filterThrow = -1
-    private var drawcompass = -1
+    private var filterHeals = 1
+    private var filterAmmo = 1
+    private var filterThrow = 1
+    private var filterNames = 1
     private var scopesToFilter = arrayListOf("")
     private var weaponsToFilter = arrayListOf("")
     private var attachToFilter = arrayListOf("")
@@ -174,6 +174,7 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
     private var healsToFilter = arrayListOf("")
     private var ammoToFilter = arrayListOf("")
     private var throwToFilter = arrayListOf("")
+	private var uselessToFilter = arrayListOf("")
     private var dragging = false
     private var prevScreenX = -1f
     private var prevScreenY = -1f
@@ -199,11 +200,11 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
         } else {
             if (camera.zoom < 0.05f) {
                 camera.zoom = 0.050001f
-                println("Max Zoom")
+            //    println("Max Zoom")
             }
             if (camera.zoom > 0.90f) {
                 camera.zoom = 0.899991f
-                println("Min Zoom")
+            //    println("Min Zoom")
             }
         }
 
@@ -238,17 +239,16 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
     override fun keyDown(keycode: Int): Boolean {
 
         when (keycode) {
-
-            HOME -> drawcompass = drawcompass * -1
-            NUMPAD_0 -> filterThrow = filterThrow * -1
-            NUMPAD_1 -> filterWeapon = filterWeapon * -1
-            NUMPAD_2 -> filterAttach = filterAttach * -1
-            NUMPAD_3 -> filterLvl2 = filterLvl2 * -1
-            NUMPAD_4 -> filterScope = filterScope * -1
-            NUMPAD_5 -> filterHeals = filterHeals * -1
-            NUMPAD_6 -> filterAmmo = filterAmmo * -1
-            NUMPAD_7 -> camera.zoom = 1 / 8f
-            NUMPAD_8 -> camera.zoom = 1 / 12f
+			DEL -> filterNames = filterNames * -1
+            NUMPAD_0 -> filterWeapon = filterWeapon * -1
+            NUMPAD_1 -> filterAttach = filterAttach * -1
+            NUMPAD_2 -> filterScope = filterScope * -1
+			NUMPAD_3 -> filterAmmo = filterAmmo * -1
+            NUMPAD_4 -> filterLvl2 = filterLvl2 * -1
+			NUMPAD_5 -> filterHeals = filterHeals * -1
+			NUMPAD_6 -> filterThrow = filterThrow * -1
+            NUMPAD_7 -> camera.zoom = 1 / 5f
+            NUMPAD_8 -> camera.zoom = 1 / 10f
             NUMPAD_9 -> camera.zoom = 1 / 24f
 
 
@@ -381,6 +381,7 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
         val cameraTileScale = Math.max(windowWidth, windowHeight) / camera.zoom
         val useScale: Int
         useScale = when {
+			cameraTileScale > 4096 -> 4
             cameraTileScale > 2048 -> 3
             cameraTileScale > 1024 -> 2
             cameraTileScale > 512 -> 1
@@ -455,77 +456,50 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
             if (filterWeapon != 1)
                 espFont.draw(spriteBatch, "WEAPON", 40f, windowHeight - 25f)
             else
-                espFontShadow.draw(spriteBatch, "WEAPON", 39f, windowHeight - 25f)
+                espFontShadow.draw(spriteBatch, "WEAPON", 40f, windowHeight - 25f)
 
             if (filterAttach != 1)
                 espFont.draw(spriteBatch, "ATTACH", 40f, windowHeight - 42f)
             else
                 espFontShadow.draw(spriteBatch, "ATTACH", 40f, windowHeight - 42f)
 
-            if (filterLvl2 != 1)
-                espFont.draw(spriteBatch, "EQUIP", 100f, windowHeight - 25f)
-            else
-                espFontShadow.draw(spriteBatch, "EQUIP", 100f, windowHeight - 25f)
-
             if (filterScope != 1)
-                espFont.draw(spriteBatch, "SCOPE", 98f, windowHeight - 42f)
+                espFont.draw(spriteBatch, "SCOPE", 100f, windowHeight - 25f)
             else
-                espFontShadow.draw(spriteBatch, "SCOPE", 98f, windowHeight - 42f)
-
-            if (filterHeals != 1)
-                espFont.draw(spriteBatch, "MEDS", 150f, windowHeight - 25f)
-            else
-                espFontShadow.draw(spriteBatch, "MEDS", 150f, windowHeight - 25f)
+                espFontShadow.draw(spriteBatch, "SCOPE", 100f, windowHeight - 25f)
 
             if (filterAmmo != 1)
-                espFont.draw(spriteBatch, "AMMO", 150f, windowHeight - 42f)
+                espFont.draw(spriteBatch, "AMMO", 100f, windowHeight - 42f)
             else
-                espFontShadow.draw(spriteBatch, "AMMO", 150f, windowHeight - 42f)
-            if (drawcompass == 1)
-                espFont.draw(spriteBatch, "COMPASS", 200f, windowHeight - 42f)
+                espFontShadow.draw(spriteBatch, "AMMO", 100f, windowHeight - 42f)
+
+			if (filterLvl2 != 1)
+                espFont.draw(spriteBatch, "EQUIP", 150f, windowHeight - 25f)
             else
-                espFontShadow.draw(spriteBatch, "COMPASS", 200f, windowHeight - 42f)
-            if (filterThrow != 1)
-                espFont.draw(spriteBatch, "THROW", 200f, windowHeight - 25f)
+                espFontShadow.draw(spriteBatch, "EQUIP", 150f, windowHeight - 25f)
+
+            if (filterHeals != 1)
+                espFont.draw(spriteBatch, "HEALS", 150f, windowHeight - 42f)
             else
-                espFontShadow.draw(spriteBatch, "THROW", 200f, windowHeight - 25f)
+                espFontShadow.draw(spriteBatch, "HEALS", 150f, windowHeight - 42f)
+				
+			if (filterThrow != 1)
+                espFont.draw(spriteBatch, "BOMBS", 200f, windowHeight - 25f)
+            else
+                espFontShadow.draw(spriteBatch, "BOMBS", 200f, windowHeight - 25f)
 
-            if (drawcompass != 1) {
-            } else {
-                (-1..1).forEach { i ->
-                    (-1..1).forEach { j ->
-                        compaseFontShadow.draw(spriteBatch, "0", windowWidth / 2 + i, windowHeight / 2 + 200 + j)        // N
-                        compaseFont.draw(spriteBatch, "0", windowWidth / 2, windowHeight / 2 + 200)        // N
+            if (filterNames != 1)
+                espFont.draw(spriteBatch, "NAMES", 200f, windowHeight - 42f)
+            else
+                espFontShadow.draw(spriteBatch, "NAMES", 200f, windowHeight - 42f)
 
-                        compaseFontShadow.draw(spriteBatch, "45", windowWidth / 2 + 200 + i, windowHeight / 2 + 200 + j)  // NE
-                        compaseFont.draw(spriteBatch, "45", windowWidth / 2 + 200, windowHeight / 2 + 200)  // NE
-
-                        compaseFontShadow.draw(spriteBatch, "90", windowWidth / 2 + 200 + i, windowHeight / 2 + j)        // E
-                        compaseFont.draw(spriteBatch, "90", windowWidth / 2 + 200, windowHeight / 2)        // E
-                        compaseFont
-                        compaseFontShadow.draw(spriteBatch, "135", windowWidth / 2 + 200 + i, windowHeight / 2 - 200 + j)  // SE
-                        compaseFont.draw(spriteBatch, "135", windowWidth / 2 + 200, windowHeight / 2 - 200)  // SE
-
-                        compaseFontShadow.draw(spriteBatch, "180", windowWidth / 2 + i, windowHeight / 2 - 200 + j)        // S
-                        compaseFont.draw(spriteBatch, "180", windowWidth / 2, windowHeight / 2 - 200)        // S
-
-                        compaseFontShadow.draw(spriteBatch, "225", windowWidth / 2 - 200 + i, windowHeight / 2 - 200 + j)   // SW
-                        compaseFont.draw(spriteBatch, "225", windowWidth / 2 - 200, windowHeight / 2 - 200)  // SW
-
-                        compaseFontShadow.draw(spriteBatch, "270", windowWidth / 2 - 200 + i, windowHeight / 2 + j)        // W
-                        compaseFont.draw(spriteBatch, "270", windowWidth / 2 - 200, windowHeight / 2)        // W
-
-                        compaseFontShadow.draw(spriteBatch, "315", windowWidth / 2 - 200 + i, windowHeight / 2 + 200 + j)   // NW
-                        compaseFont.draw(spriteBatch, "315", windowWidth / 2 - 200, windowHeight / 2 + 200)  // NW
-                    }
-                }
-            }
-
+            
             val time = (pinLocation.cpy().sub(selfX, selfY).len() / runSpeed).toInt()
             val (x, y) = pinLocation.mapToWindow()
             littleFont.draw(spriteBatch, "$time", x, windowHeight - y)
             safeZoneHint()
-            drawPlayerInfos(typeLocation[Player])
+			if(filterNames != 1)
+				drawPlayerInfos(typeLocation[Player])
         }
 
         // This makes the array empty if the filter is off for performance with an inverted function since arrays are expensive
@@ -567,14 +541,13 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
             arrayListOf("Grenade", "Molotov", "Smoke", "Flash")
         }
 
-
-
         level2Filter = if (filterLvl2 != 1) {
             arrayListOf("")
         } else {
             arrayListOf("Bag2", "Arm2", "Helm2")
         }
 
+		uselessToFilter = arrayListOf("AR.Stock", "A.Grip", "U.Ext", "AR.Ext", "S.Ext", "Smoke", "Flash", "9", "45", "red-dot", "holo") 
 
         //println("$ayyAmount")
         val iconScale = 2f / camera.zoom
@@ -588,42 +561,47 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
                         val syFix = windowHeight - sy - ayyAmount
                         // println(items)
                         items.forEach {
-                            if (it !in weaponsToFilter) {
+						
+                            if (it !in uselessToFilter) {
+							
+								if (it !in weaponsToFilter) {
 
-                                if (it !in scopesToFilter) {
+									if (it !in scopesToFilter) {
 
-                                    if (it !in attachToFilter) {
+										if (it !in attachToFilter) {
 
-                                        if (it !in level2Filter) {
+											if (it !in level2Filter) {
 
-                                            if (it !in ammoToFilter) {
+												if (it !in ammoToFilter) {
 
-                                                if (it !in healsToFilter) {
+													if (it !in healsToFilter) {
 
-                                                    if (it !in throwToFilter) {
+														if (it !in throwToFilter) {
 
-                                                        if (
-                                                                iconScale > 20 &&
-                                                                sx > 0 && sx < windowWidth &&
-                                                                syFix > 0 && syFix < windowHeight
-                                                        ) {
-                                                            iconImages.setIcon(it)
-                                                            draw(
-                                                                    iconImages.icon,
-                                                                    sx - iconScale / 2,
-                                                                    syFix + iconScale / 2,
-                                                                    iconScale,
-                                                                    iconScale
-                                                            )
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+															if (
+																	iconScale > 20 &&
+																	sx > 0 && sx < windowWidth &&
+																	syFix > 0 && syFix < windowHeight
+															) {
+																iconImages.setIcon(it)
+																draw(
+																		iconImages.icon,
+																		sx - iconScale / 2,
+																		syFix + iconScale / 2,
+																		iconScale,
+																		iconScale
+																)
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						
+						}
                     }
             //Draw Corpse Icon
             corpseLocation.values.forEach {
@@ -640,7 +618,11 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
                 val (x, y) = it
                 val (sx, sy) = Vector2(x, y).mapToWindow()
                 val syFix = windowHeight - sy
-                val iconScale = 2f / camera.zoom
+                val iconScale = if (camera.zoom < 1 / 15f) {
+					2f / camera.zoom
+				} else {
+					2f / (1 / 15f)
+				}
                 spriteBatch.draw(airdropimage, sx - iconScale / 2, syFix + iconScale / 2, iconScale, -iconScale,
                         0, 0, 64, 64,
                         false, true)
@@ -770,7 +752,6 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
                 }
                 Player -> actorInfos?.forEach {
                     drawPlayer(playerColor, it)
-
                     aimAtMe(it, selfX, selfY, currentTime, zoom)
                 }
                 Parachute -> actorInfos?.forEach {
