@@ -41,11 +41,18 @@ Using [maven](https://maven.apache.org/) or [JetBrains](https://www.jetbrains.co
 
 1. Install VMWare Workstation
 2. Setup your VM in Bridged Mode, replicate physical.
-3. Install [JDK8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) on your VM.
-4. Install [Wireshark + WinPCap](https://www.wireshark.org/) on your VM
-5. Change your IP addresses in the batch file
-6. Run as admin and disable full screen optimizations in the Compatibility tab in the Properties.
-7. Run the batch file.
+3. Install [Maven](https://maven.apache.org/install.html) on your VM
+4. Add MAVEN_OPTS environment variable, screenshot below.
+4. Install [JDK8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) on your VM and 
+5. Add JAVA_HOME to your Environment Path. (path to JDK)
+5. Install [Wireshark + WinPCap](https://www.wireshark.org/) on your VM
+6. Change your IP addresses in the batch file, It will crash if they are wrong.
+7. Do the extra step below in the Compatibility tab in the Properties.
+8. Run the batch file.
 
+![Imgur](https://i.imgur.com/aWCdgUX.png)
+
+
+### You can find detailed incstructions on how to run a maven project [here](https://maven.apache.org/run.html)
 
 
