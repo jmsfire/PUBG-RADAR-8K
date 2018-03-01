@@ -2,7 +2,7 @@
 
 ### Скачать скомпилированную версию
 
-https://github.com/FutureXpo/PUBG-RADAR-4K/releases
+https://github.com/FutureXpo/PUBG-RADAR-8K/releases
 
 ### Небольшая заметка
 
