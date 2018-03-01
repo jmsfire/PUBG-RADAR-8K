@@ -2,18 +2,10 @@ package pubg.radar.ui
 
 import com.badlogic.gdx.ApplicationListener
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input.Buttons.*
-import com.badlogic.gdx.Input.Keys.DEL
-import com.badlogic.gdx.Input.Keys.NUMPAD_0
-import com.badlogic.gdx.Input.Keys.NUMPAD_1
-import com.badlogic.gdx.Input.Keys.NUMPAD_2
-import com.badlogic.gdx.Input.Keys.NUMPAD_3
-import com.badlogic.gdx.Input.Keys.NUMPAD_4
-import com.badlogic.gdx.Input.Keys.NUMPAD_5
-import com.badlogic.gdx.Input.Keys.NUMPAD_6
-import com.badlogic.gdx.Input.Keys.NUMPAD_7
-import com.badlogic.gdx.Input.Keys.NUMPAD_8
-import com.badlogic.gdx.Input.Keys.NUMPAD_9
+import com.badlogic.gdx.Input.Buttons.MIDDLE
+import com.badlogic.gdx.Input.Buttons.RIGHT
+import com.badlogic.gdx.Input.Buttons.LEFT
+import com.badlogic.gdx.Input.Keys.*
 import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
@@ -115,8 +107,6 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
         config.useOpenGL3(false, 3, 2)
         config.setWindowedMode(800, 800)
         config.setResizable(true)
-    //    config.useVsync(false)
-        config.setIdleFPS(30)
         config.setBackBufferConfig(8, 8, 8, 8, 16, 0, 8)
         Lwjgl3Application(this, config)
     }
@@ -146,11 +136,12 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
     private lateinit var espFontShadow: BitmapFont
     private lateinit var compaseFont: BitmapFont
     private lateinit var compaseFontShadow: BitmapFont
+    private lateinit var littleFontShadow: BitmapFont
 
 
-    private val tileZooms = listOf("256", "512", "1024", "2048", "4096")
-    private val tileRowCounts = listOf(1, 2, 4, 8, 16, 32)
-    private val tileSizes = listOf(819200f, 409600f, 204800f, 102400f, 51200f)
+    private val tileZooms = listOf("256", "512", "1024", "2048" ,"4096", "8192")
+    private val tileRowCounts = listOf(1, 2, 4, 8 , 16, 32)
+    private val tileSizes = listOf(819200f, 409600f, 204800f, 102400f, 51200f, 25600f)
 
     private val layout = GlyphLayout()
     private var windowWidth = initialWindowWidth
@@ -163,10 +154,11 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
     private var filterAttach = 1
     private var filterLvl2 = -1
     private var filterScope = -1
-    private var filterHeals = 1
-    private var filterAmmo = 1
-    private var filterThrow = 1
-    private var filterNames = 1
+	private var filterHeals = 1
+	private var filterAmmo = 1
+	private var filterThrow = 1
+	private var filterNames = 1
+    private var toggleView = -1
     private var scopesToFilter = arrayListOf("")
     private var weaponsToFilter = arrayListOf("")
     private var attachToFilter = arrayListOf("")
@@ -180,9 +172,10 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
     private var prevScreenY = -1f
     private var screenOffsetX = 0f
     private var screenOffsetY = 0f
-    private var ayyAmount = 26
-    // 26 Fixes the item locations at full zoom
-    // The problem with item locations is the camera, the locations are correct.
+
+    // Origin Offset
+    private var originYlazy = 1.15000014f
+    private var originXlazy = -0.45000014f
 
     private fun Vector2.windowToMap() =
             Vector2(selfCoords.x + (x - windowWidth / 2.0f) * camera.zoom * windowToMapUnit + screenOffsetX,
@@ -195,22 +188,21 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
 
     override fun scrolled(amount: Int): Boolean {
 
-        if (camera.zoom > 0.05f && camera.zoom < 1.05f) {
+        if (camera.zoom > 0.04f && camera.zoom < 1.09f) {
             camera.zoom *= 1.05f.pow(amount)
         } else {
-            if (camera.zoom < 0.05f) {
-                camera.zoom = 0.050001f
+            if (camera.zoom < 0.04f) {
+                camera.zoom = 0.041f
             //    println("Max Zoom")
             }
-            if (camera.zoom > 0.90f) {
-                camera.zoom = 0.899991f
+            if (camera.zoom > 1.09f) {
+                camera.zoom = 1.089f
             //    println("Min Zoom")
             }
         }
 
         return true
     }
-
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         when (button) {
@@ -239,17 +231,32 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
     override fun keyDown(keycode: Int): Boolean {
 
         when (keycode) {
+
+            // Icon Filter Keybinds
 			DEL -> filterNames = filterNames * -1
-            NUMPAD_0 -> filterWeapon = filterWeapon * -1
-            NUMPAD_1 -> filterAttach = filterAttach * -1
-            NUMPAD_2 -> filterScope = filterScope * -1
+			NUMPAD_0 -> filterWeapon = filterWeapon * -1
+			NUMPAD_1 -> filterAttach = filterAttach * -1
+			NUMPAD_2 -> filterScope = filterScope * -1
 			NUMPAD_3 -> filterAmmo = filterAmmo * -1
-            NUMPAD_4 -> filterLvl2 = filterLvl2 * -1
+			NUMPAD_4 -> filterLvl2 = filterLvl2 * -1
 			NUMPAD_5 -> filterHeals = filterHeals * -1
 			NUMPAD_6 -> filterThrow = filterThrow * -1
-            NUMPAD_7 -> camera.zoom = 1 / 5f
-            NUMPAD_8 -> camera.zoom = 1 / 10f
-            NUMPAD_9 -> camera.zoom = 1 / 24f
+			NUMPAD_7 -> camera.zoom = 1 / 5f
+			NUMPAD_8 -> camera.zoom = 1 / 10f
+			NUMPAD_9 -> camera.zoom = 1 / 24f
+
+            // Item Offset Tweaker Keybinds
+            F5 -> originXlazy = originXlazy + 0.1f
+            F6 -> originXlazy = originXlazy - 0.1f
+            F7 -> originYlazy = originYlazy + 0.1f
+            F8 -> originYlazy = originYlazy - 0.1f
+
+            // Zoom In/Out || Overrides Max/Min Zoom
+            F9 -> camera.zoom = camera.zoom + 0.00525f
+            F10 -> camera.zoom = camera.zoom - 0.00525f
+
+            // Toggle View Line
+            F11 -> toggleView = toggleView * -1
 
 
         }
@@ -307,8 +314,8 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
                 mapMiramarTiles[it]?.set(y, mutableMapOf())
                 for (j in 1..tileRowCounts[cur]) {
                     val x = if (j < 10) "0$j" else "$j"
-                    mapErangelTiles[it]!![y]?.set(x, Texture(Gdx.files.internal("tiles/Erangel/$it/${it}_${y}_$x-min.png")))
-                    mapMiramarTiles[it]!![y]?.set(x, Texture(Gdx.files.internal("tiles/Miramar/$it/${it}_${y}_$x-min.png")))
+                    mapErangelTiles[it]!![y]?.set(x, Texture(Gdx.files.internal("tiles/Erangel/$it/${it}_${y}_$x.png")))
+                    mapMiramarTiles[it]!![y]?.set(x, Texture(Gdx.files.internal("tiles/Miramar/$it/${it}_${y}_$x.png")))
                 }
             }
             cur++
@@ -356,6 +363,13 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
         compaseFont = generator.generateFont(param)
         param.color = Color(0f, 0f, 0f, 0.5f)
         compaseFontShadow = generator.generateFont(param)
+        param.characters = DEFAULT_CHARS
+        param.size = 20
+        param.color = WHITE
+        littleFont = generator.generateFont(param)
+        param.color = Color(0f, 0f, 0f, 0.5f)
+        littleFontShadow = generator.generateFont(param)
+
         generatorHub.dispose()
         generatorNumber.dispose()
         generator.dispose()
@@ -381,12 +395,13 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
         val cameraTileScale = Math.max(windowWidth, windowHeight) / camera.zoom
         val useScale: Int
         useScale = when {
-			cameraTileScale > 4096 -> 4
+            cameraTileScale > 8192 -> 5
+            cameraTileScale > 4096 -> 4
             cameraTileScale > 2048 -> 3
             cameraTileScale > 1024 -> 2
             cameraTileScale > 512 -> 1
             cameraTileScale > 256 -> 0
-            else -> 0
+            else -> 2
         }
         val (tlX, tlY) = Vector2(0f, 0f).windowToMap()
         val (brX, brY) = Vector2(windowWidth, windowHeight).windowToMap()
@@ -436,18 +451,28 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
             spriteBatch.draw(hubpanel, windowWidth - 130f, windowHeight - 60f)
             hubFontShadow.draw(spriteBatch, "ALIVE", windowWidth - 85f, windowHeight - 29f)
             hubFont.draw(spriteBatch, "$NumAlivePlayers", windowWidth - 110f - layout.width / 2, windowHeight - 29f)
-
             val teamText = "$NumAliveTeams"
-            layout.setText(hubFont, teamText)
-            spriteBatch.draw(hubpanel, windowWidth - 260f, windowHeight - 60f)
-            hubFontShadow.draw(spriteBatch, "TEAM", windowWidth - 215f, windowHeight - 29f)
-            hubFont.draw(spriteBatch, "$NumAliveTeams", windowWidth - 240f - layout.width / 2, windowHeight - 29f)
 
-            val timeText = "${TotalWarningDuration.toInt() - ElapsedWarningDuration.toInt()}"
-            layout.setText(hubFont, timeText)
-            spriteBatch.draw(hubpanel, windowWidth - 390f, windowHeight - 60f)
-            hubFontShadow.draw(spriteBatch, "SECS", windowWidth - 345f, windowHeight - 29f)
-            hubFont.draw(spriteBatch, "${TotalWarningDuration.toInt() - ElapsedWarningDuration.toInt()}", windowWidth - 370f - layout.width / 2, windowHeight - 29f)
+            if (teamText != numText) {
+                layout.setText(hubFont, teamText)
+                spriteBatch.draw(hubpanel, windowWidth - 260f, windowHeight - 60f)
+                hubFontShadow.draw(spriteBatch, "TEAM", windowWidth - 215f, windowHeight - 29f)
+                hubFont.draw(spriteBatch, "$NumAliveTeams", windowWidth - 240f - layout.width / 2, windowHeight - 29f)
+            }
+
+            if (teamText != numText) {
+                val timeText = "${TotalWarningDuration.toInt() - ElapsedWarningDuration.toInt()}"
+                layout.setText(hubFont, timeText)
+                spriteBatch.draw(hubpanel, windowWidth - 390f, windowHeight - 60f)
+                hubFontShadow.draw(spriteBatch, "SECS", windowWidth - 345f, windowHeight - 29f)
+                hubFont.draw(spriteBatch, "${TotalWarningDuration.toInt() - ElapsedWarningDuration.toInt()}", windowWidth - 370f - layout.width / 2, windowHeight - 29f)
+            } else {
+                spriteBatch.draw(hubpanel, windowWidth - 390f + 130f, windowHeight - 60f)
+                hubFontShadow.draw(spriteBatch, "SECS", windowWidth - 345f + 128f, windowHeight - 29f)
+                hubFont.draw(spriteBatch, "${TotalWarningDuration.toInt() - ElapsedWarningDuration.toInt()}", windowWidth - 370f + 128f - layout.width / 2, windowHeight - 29f)
+
+            }
+
 
             // ITEM ESP FILTER PANEL
             spriteBatch.draw(hubpanelblank, 30f, windowHeight - 60f)
@@ -467,23 +492,23 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
                 espFont.draw(spriteBatch, "SCOPE", 100f, windowHeight - 25f)
             else
                 espFontShadow.draw(spriteBatch, "SCOPE", 100f, windowHeight - 25f)
-
-            if (filterAmmo != 1)
+				
+			if (filterAmmo != 1)
                 espFont.draw(spriteBatch, "AMMO", 100f, windowHeight - 42f)
             else
                 espFontShadow.draw(spriteBatch, "AMMO", 100f, windowHeight - 42f)
-
+				
 			if (filterLvl2 != 1)
                 espFont.draw(spriteBatch, "EQUIP", 150f, windowHeight - 25f)
             else
                 espFontShadow.draw(spriteBatch, "EQUIP", 150f, windowHeight - 25f)
-
+				
             if (filterHeals != 1)
                 espFont.draw(spriteBatch, "HEALS", 150f, windowHeight - 42f)
             else
                 espFontShadow.draw(spriteBatch, "HEALS", 150f, windowHeight - 42f)
-				
-			if (filterThrow != 1)
+
+            if (filterThrow != 1)
                 espFont.draw(spriteBatch, "BOMBS", 200f, windowHeight - 25f)
             else
                 espFontShadow.draw(spriteBatch, "BOMBS", 200f, windowHeight - 25f)
@@ -493,20 +518,22 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
             else
                 espFontShadow.draw(spriteBatch, "NAMES", 200f, windowHeight - 42f)
 
-            
-            val time = (pinLocation.cpy().sub(selfX, selfY).len() / runSpeed).toInt()
+            val pinDistance = (pinLocation.cpy().sub(selfX, selfY).len() / 100).toInt()
             val (x, y) = pinLocation.mapToWindow()
-            littleFont.draw(spriteBatch, "$time", x, windowHeight - y)
+
             safeZoneHint()
 			if(filterNames != 1)
 				drawPlayerInfos(typeLocation[Player])
+            val profileText = "Weapon: ${filterWeapon}"
+            layout.setText(compaseFontShadow, profileText)
+            littleFont.draw(spriteBatch, "$pinDistance", x, windowHeight - y)
         }
 
         // This makes the array empty if the filter is off for performance with an inverted function since arrays are expensive
         scopesToFilter = if (filterScope != 1) {
             arrayListOf("")
         } else {
-            arrayListOf("red-dot", "2x", "8x", "4x", "holo", "DotSight")
+            arrayListOf("DotSight", "Aimpoint", "Holosight", "CQBSS", "ACQG")
         }
 
 
@@ -516,11 +543,10 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
             arrayListOf("AR.Stock", "S.Loops", "CheekPad", "A.Grip", "V.Grip", "U.Ext", "AR.Ext", "S.Ext", "U.ExtQ", "AR.ExtQ", "S.ExtQ", "Choke", "AR.Comp", "FH", "U.Supp", "AR.Supp", "S.Supp")
         }
 
-
         weaponsToFilter = if (filterWeapon != 1) {
             arrayListOf("")
         } else {
-            arrayListOf("M16A4", "M416", "98k", "Scar", "Ak", "Sks", "Mini", "DP28", "Ump", "Vector", "Pan")
+            arrayListOf("M16A4", "HK416", "Kar98k", "SCAR-L", "AK47", "SKS", "Mini14", "DP28", "UMP", "Vector", "UZI", "Pan")
         }
 
         healsToFilter = if (filterHeals != 1) {
@@ -532,13 +558,13 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
         ammoToFilter = if (filterAmmo != 1) {
             arrayListOf("")
         } else {
-            arrayListOf("9", "45", "556", "762", "300")
+            arrayListOf("Item_Ammo_9mm", "Item_Ammo_45mm", "Item_Ammo_556mm", "Item_Ammo_762mm", "Item_Ammo_300mm")
         }
 
         throwToFilter = if (filterThrow != 1) {
             arrayListOf("")
         } else {
-            arrayListOf("Grenade", "Molotov", "Smoke", "Flash")
+            arrayListOf("Grenade")
         }
 
         level2Filter = if (filterLvl2 != 1) {
@@ -546,10 +572,9 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
         } else {
             arrayListOf("Bag2", "Arm2", "Helm2")
         }
-
-		uselessToFilter = arrayListOf("AR.Stock", "A.Grip", "U.Ext", "AR.Ext", "S.Ext", "Smoke", "Flash", "9", "45", "red-dot", "holo") 
-
-        //println("$ayyAmount")
+		
+		uselessToFilter = arrayListOf("AR.Stock", "A.Grip", "U.Ext", "AR.Ext", "S.Ext", "Smoke", "Flash", "Item_Ammo_9mm", "Item_Ammo_45mm", "DotSight", "Holosight", "Aimpoint") 
+		
         val iconScale = 2f / camera.zoom
         paint(itemCamera.combined) {
             droppedItemLocation.values.asSequence().filter { it.second.isNotEmpty() }
@@ -557,27 +582,17 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
                         val (x, y) = it.first
                         val items = it.second
                         val (sx, sy) = Vector2(x, y).mapToWindow()
-
-                        val syFix = windowHeight - sy - ayyAmount
+                        val syFix = windowHeight - sy
                         // println(items)
                         items.forEach {
-						
-                            if (it !in uselessToFilter) {
-							
+							if (it !in uselessToFilter) {
 								if (it !in weaponsToFilter) {
-
 									if (it !in scopesToFilter) {
-
 										if (it !in attachToFilter) {
-
 											if (it !in level2Filter) {
-
 												if (it !in ammoToFilter) {
-
 													if (it !in healsToFilter) {
-
 														if (it !in throwToFilter) {
-
 															if (
 																	iconScale > 20 &&
 																	sx > 0 && sx < windowWidth &&
@@ -586,10 +601,15 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
 																iconImages.setIcon(it)
 																draw(
 																		iconImages.icon,
-																		sx - iconScale / 2,
-																		syFix + iconScale / 2,
-																		iconScale,
-																		iconScale
+																		sx - iconScale / 2,  // y
+																		syFix + iconScale / 2, // x
+																		originXlazy,     // origin x
+																		originYlazy,     // origin y
+																		1f,      // height
+																		1f,     // width
+																		iconScale,     // scale
+																		iconScale,     // scale
+																		0f    // rotation we need this for car
 																)
 															}
 														}
@@ -600,7 +620,6 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
 									}
 								}
 							}
-						
 						}
                     }
             //Draw Corpse Icon
@@ -618,7 +637,7 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
                 val (x, y) = it
                 val (sx, sy) = Vector2(x, y).mapToWindow()
                 val syFix = windowHeight - sy
-                val iconScale = if (camera.zoom < 1 / 15f) {
+                val iconScale = if (camera.zoom < 1 / 14f) {
 					2f / camera.zoom
 				} else {
 					2f / (1 / 15f)
@@ -752,6 +771,7 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
                 }
                 Player -> actorInfos?.forEach {
                     drawPlayer(playerColor, it)
+
                     aimAtMe(it, selfX, selfY, currentTime, zoom)
                 }
                 Parachute -> actorInfos?.forEach {
@@ -871,6 +891,10 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
         if (drawSight) {
             color = sightColor
             arc(x, y, directionRadius, dir - fov / 2, fov, 6)
+
+            if(toggleView == 1){
+            color = Color(1.0f, 1.0f, 0.0f, 1.0f)
+            arc(x, y, directionRadius * 20f, dir - 0.25f, 0.5f, 6)}
         }
     }
 
@@ -931,6 +955,7 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
         corpseboximage.dispose()
         airdropimage.dispose()
         iconImages.iconSheet.dispose()
+        littleFontShadow.dispose()
 
         var cur = 0
         tileZooms.forEach {
