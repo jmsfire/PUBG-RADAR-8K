@@ -209,7 +209,7 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
             RIGHT -> {
                 pinLocation.set(pinLocation.set(screenX.toFloat(), screenY.toFloat()).windowToMap())
                 camera.update()
-                println(pinLocation)
+            //    println(pinLocation)
                 return true
             }
             LEFT -> {
@@ -395,13 +395,13 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
         val cameraTileScale = Math.max(windowWidth, windowHeight) / camera.zoom
         val useScale: Int
         useScale = when {
-            cameraTileScale > 8192 -> 5
+			cameraTileScale > 8192 -> 5
             cameraTileScale > 4096 -> 4
             cameraTileScale > 2048 -> 3
             cameraTileScale > 1024 -> 2
             cameraTileScale > 512 -> 1
             cameraTileScale > 256 -> 0
-            else -> 2
+            else -> 0
         }
         val (tlX, tlY) = Vector2(0f, 0f).windowToMap()
         val (brX, brY) = Vector2(windowWidth, windowHeight).windowToMap()
@@ -527,13 +527,14 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
             val profileText = "Weapon: ${filterWeapon}"
             layout.setText(compaseFontShadow, profileText)
             littleFont.draw(spriteBatch, "$pinDistance", x, windowHeight - y)
+
         }
 
         // This makes the array empty if the filter is off for performance with an inverted function since arrays are expensive
         scopesToFilter = if (filterScope != 1) {
             arrayListOf("")
         } else {
-            arrayListOf("DotSight", "Aimpoint", "Holosight", "CQBSS", "ACQG")
+            arrayListOf("DotSight", "Aimpoint", "Holosight", "CQBSS", "ACOG")
         }
 
 
@@ -558,13 +559,13 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
         ammoToFilter = if (filterAmmo != 1) {
             arrayListOf("")
         } else {
-            arrayListOf("Item_Ammo_9mm", "Item_Ammo_45mm", "Item_Ammo_556mm", "Item_Ammo_762mm", "Item_Ammo_300mm")
+            arrayListOf("9mm", "45mm", "556mm", "762mm", "300mm")
         }
 
         throwToFilter = if (filterThrow != 1) {
             arrayListOf("")
         } else {
-            arrayListOf("Grenade")
+            arrayListOf("Grenade","FlashBang","SmokeBomb","Molotov")
         }
 
         level2Filter = if (filterLvl2 != 1) {
@@ -573,7 +574,7 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
             arrayListOf("Bag2", "Arm2", "Helm2")
         }
 		
-		uselessToFilter = arrayListOf("AR.Stock", "A.Grip", "U.Ext", "AR.Ext", "S.Ext", "Smoke", "Flash", "Item_Ammo_9mm", "Item_Ammo_45mm", "DotSight", "Holosight", "Aimpoint") 
+		uselessToFilter = arrayListOf("AR.Stock", "A.Grip", "U.Ext", "AR.Ext", "S.Ext", "SmokeBomb", "FlashBang", "45mm", "DotSight", "Holosight", "Aimpoint") 
 		
         val iconScale = 2f / camera.zoom
         paint(itemCamera.combined) {
@@ -620,7 +621,7 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
 									}
 								}
 							}
-						}
+                        }
                     }
             //Draw Corpse Icon
             corpseLocation.values.forEach {
