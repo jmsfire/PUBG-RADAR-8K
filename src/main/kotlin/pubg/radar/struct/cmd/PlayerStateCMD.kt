@@ -16,7 +16,7 @@ import pubg.radar.struct.cmd.CMD.propertyString
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 
-object PlayerStateCMD: GameListener {
+object PlayerStateCMD : GameListener {
     init {
         register(this)
     }
