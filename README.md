@@ -32,6 +32,13 @@ https://github.com/FutureXpo/PUBG-RADAR-8K/releases
 
 >NUMPAD_9 -> Looting - Лут с большим приближением
 
+>F10 -> Zoom- - Отдалить
+
+>F11 -> Zoom+ - Приблизить
+
+#### UI - Интерфейс:
+>F8 -> Filled players icons - Непрозрачные иконки игроков
+
 ### Online Mode:
 
 `java -jar target\pubg-radar-1.0-SNAPSHOT-jar-with-dependencies.jar 192.168.1.70 PortFilter 192.168.1.67`
