@@ -26,11 +26,11 @@ https://github.com/FutureXpo/PUBG-RADAR-8K/releases
 >DEL -> Filter Names - Показать/Скрыть имена игроков
 
 #### Zooms:
->NUMPAD_7 -> Scouting - Обзор
+>NUMPAD_7 -> Driving - Вождение машины с хорошим обзором
 
->NUMPAD_8 -> Scout/Loot - Обзор/Лут
+>NUMPAD_8 -> Finding a car - Поиск машины со средним обзором
 
->NUMPAD_9 -> Looting - Лут
+>NUMPAD_9 -> Looting - Лут с большим приближением
 
 ### Online Mode:
 
