@@ -6,7 +6,7 @@ https://github.com/FutureXpo/PUBG-RADAR-8K/releases
 
 ### Небольшая заметка
 
-Нельзя фильтровать третий сет брони
+Нельзя фильтровать третий сет брони и пламегаситель на AR
 
 #### Item Filter - Фильтры:
 >NUMPAD_0 -> Filter Weapon - Показать/Скрыть оружие
@@ -26,11 +26,19 @@ https://github.com/FutureXpo/PUBG-RADAR-8K/releases
 >DEL -> Filter Names - Показать/Скрыть имена игроков
 
 #### Zooms:
->NUMPAD_7 -> Scouting - Обзор
+>NUMPAD_7 -> Driving - Вождение машины с хорошим обзором
 
->NUMPAD_8 -> Scout/Loot - Обзор/Лут
+>NUMPAD_8 -> Finding a car - Поиск машины со средним обзором
 
->NUMPAD_9 -> Looting - Лут
+>NUMPAD_9 -> Looting - Лут с большим приближением
+
+>F9 -> Zoom- - Отдалить
+
+>F10 -> Zoom+ - Приблизить
+
+#### UI - Интерфейс:
+>F11 -> Players sight - Направление движения
+
 
 ### Online Mode:
 
