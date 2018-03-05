@@ -29,7 +29,6 @@ https://github.com/FutureXpo/PUBG-RADAR-8K/releases
 >NUMPAD_7 -> Driving - Вождение машины с хорошим обзором
 
 >NUMPAD_8 -> Finding a car - Поиск машины со средним обзором
-<<<<<<< HEAD
 
 >NUMPAD_9 -> Looting - Лут с большим приближением
 
@@ -40,17 +39,7 @@ https://github.com/FutureXpo/PUBG-RADAR-8K/releases
 #### UI - Интерфейс:
 >F11 -> Players sight - Направление движения
 
-=======
 
->NUMPAD_9 -> Looting - Лут с большим приближением
-
->F10 -> Zoom- - Отдалить
-
->F11 -> Zoom+ - Приблизить
-
-#### UI - Интерфейс:
->F8 -> Filled players icons - Непрозрачные иконки игроков
->>>>>>> fc7704756c195e9673204cbd37a060f041d5d2c9
 
 ### Online Mode:
 
