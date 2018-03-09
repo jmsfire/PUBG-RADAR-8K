@@ -5,6 +5,7 @@ import pubg.radar.GameListener
 import pubg.radar.register
 import pubg.radar.struct.Actor
 import pubg.radar.struct.Bunch
+import pubg.radar.struct.NetGuidCacheObject
 import pubg.radar.struct.cmd.CMD.propertyBool
 import pubg.radar.struct.cmd.CMD.propertyByte
 import pubg.radar.struct.cmd.CMD.propertyFloat
@@ -58,7 +59,7 @@ object GameStateCMD : GameListener {
     var NumAlivePlayers = 0
     var NumAliveTeams = 0
 
-    fun process(actor: Actor, bunch: Bunch, waitingHandle: Int): Boolean {
+    fun process(actor: Actor, bunch: Bunch, repObj: NetGuidCacheObject?, waitingHandle: Int, data: HashMap<String, Any?>): Boolean {
         with(bunch) {
             when (waitingHandle) {
                 16 -> {

@@ -3,10 +3,14 @@ package pubg.radar.struct
 import com.badlogic.gdx.math.Vector3
 import pubg.radar.struct.Archetype.*
 import pubg.radar.struct.Archetype.Companion.fromArchetype
+import java.util.concurrent.ConcurrentHashMap
 
 enum class Archetype { //order matters, it affects the order of drawing
     Other,
     GameState,
+    Plane,
+    Parachute,
+    Player,
     DroopedItemGroup,
     Grenade,
     TwoSeatBoat,
@@ -17,37 +21,40 @@ enum class Archetype { //order matters, it affects the order of drawing
     TwoSeatCar,
     ThreeSeatCar,
     SixSeatCar,
-    Plane,
-    Player,
-    Parachute,
     AirDrop,
     PlayerState,
     Team,
-    DeathDropItemPackage;
+    DeathDropItemPackage,
+    DroppedItem,
+    WeaponProcessor,
+    Weapon;
 
     companion object {
-        fun fromArchetype(archetype: String): Archetype {
-            return when {
-                archetype.contains("Default__TSLGameState") -> GameState
-                archetype.contains("Default__Player") -> Player
-                archetype.contains("DroppedItemGroup") -> DroopedItemGroup
-                archetype.contains("Aircraft") -> Plane
-                archetype.contains("Parachute") -> Parachute
-                archetype.contains(Regex("(bike|Sidecart)", RegexOption.IGNORE_CASE)) -> TwoSeatBike
-                archetype.contains(Regex("(buggy)", RegexOption.IGNORE_CASE)) -> TwoSeatCar
-                archetype.contains(Regex("(dacia|uaz)", RegexOption.IGNORE_CASE)) -> FourSeatDU
-                archetype.contains(Regex("(pickup)", RegexOption.IGNORE_CASE)) -> FourSeatP
-                archetype.contains("bus", true) -> SixSeatCar
-                archetype.contains("van", true) -> SixSeatCar
-                archetype.contains("AquaRail", true) -> TwoSeatBoat
-                archetype.contains("boat", true) -> SixSeatBoat
-                archetype.contains("Carapackage", true) -> AirDrop
-                archetype.contains(Regex("(SmokeBomb|Molotov|Grenade|FlashBang|BigBomb)", RegexOption.IGNORE_CASE)) -> Grenade
-                archetype.contains("Default__TslPlayerState") -> PlayerState
-                archetype.contains("Default__Team", true) -> Team
-                archetype.contains("DeathDropItemPackage", true) -> DeathDropItemPackage
-                else -> Other
-            }
+        fun fromArchetype(archetype: String): Archetype = when {
+            archetype.contains("Default__TSLGameState") -> GameState
+            archetype.contains("Aircraft") -> Plane
+            archetype.contains("Parachute") -> Parachute
+            archetype.contains("Default__Player") -> Player
+            archetype.contains("DroppedItemGroup") -> DroopedItemGroup
+            archetype.contains("bike", true) -> TwoSeatBike
+            archetype.contains("Sidecart", true) -> ThreeSeatCar
+            archetype.contains("buggy", true) -> TwoSeatCar
+            archetype.contains("dacia", true) -> FourSeatDU
+            archetype.contains("uaz", true) -> FourSeatDU
+            archetype.contains("pickup", true) -> FourSeatP
+            archetype.contains("bus", true) -> SixSeatCar
+            archetype.contains("van", true) -> SixSeatCar
+            archetype.contains("AquaRail", true) -> TwoSeatBoat
+            archetype.contains("boat", true) -> SixSeatBoat
+            archetype.contains("Carapackage", true) -> AirDrop
+            archetype.contains(Regex("(SmokeBomb|Molotov|Grenade|FlashBang|BigBomb)", RegexOption.IGNORE_CASE)) -> Grenade
+            archetype.contains("Default__TslPlayerState") -> PlayerState
+            archetype.contains("Default__Team", true) -> Team
+            archetype.contains("DeathDropItemPackage", true) -> DeathDropItemPackage
+            archetype.contains("DroppedItem") -> DroppedItem
+            archetype.contains("Default__WeaponProcessor") -> WeaponProcessor
+            archetype.contains("Weap") -> Weapon
+            else -> Other
         }
     }
 }
@@ -60,16 +67,18 @@ class Actor(val netGUID: NetworkGUID, private val archetypeGUID: NetworkGUID, va
     var rotation = Vector3.Zero!!
     var velocity = Vector3.Zero!!
     var owner: NetworkGUID? = null
-    var attachTo: NetworkGUID? = null
-    var beAttached = false
+    var attachParent: NetworkGUID? = null
+    var attachChildren = ConcurrentHashMap<NetworkGUID, NetworkGUID>()
     var isStatic = false
 
     override fun toString(): String {
         val ow: Any = this.owner ?: ""
-        return "Actor(netGUID=$netGUID,location=$location,archetypeGUID=$archetypeGUID, archetype=$archetype, ChIndex=$ChIndex, Type=$Type,  rotation=$rotation, velocity=$velocity,owner=$ow"
+        return "Actor(netGUID=$netGUID,location=$location,archetypeGUID=$archetypeGUID,\n" +
+                "archetype=$archetype, ChIndex=$ChIndex, Type=$Type,  rotation=$rotation, velocity=$velocity,owner=$ow"
     }
 
     val isAPawn = when (Type) {
+        Parachute,
         TwoSeatBoat,
         SixSeatBoat,
         TwoSeatBike,
@@ -79,8 +88,7 @@ class Actor(val netGUID: NetworkGUID, private val archetypeGUID: NetworkGUID, va
         FourSeatP,
         SixSeatCar,
         Plane,
-        Player,
-        Parachute -> true
+        Player -> true
         else -> false
     }
     val isACharacter = Type == Player

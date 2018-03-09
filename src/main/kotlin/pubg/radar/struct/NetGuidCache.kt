@@ -12,7 +12,7 @@ class NetGuidCacheObject(
         val outerGUID: NetworkGUID) {
     var holdObj: Any? = null
     override fun toString(): String {
-        return "{path='$pathName', outer[$outerGUID]=${guidCache.getObjectFromNetGUID(outerGUID)}}"
+        return "{path='$pathName', outer[$outerGUID]}"
     }
 }
 
@@ -87,7 +87,11 @@ class NetGUIDCache {
                 bugln { "Reassigning NetGUID $netGUID" }
             objectLoop.remove(netGUID)
         }
-        val cacheObject = NetGuidCacheObject("", netGUID)
+        val cacheObject = when (obj) {
+                 is NetGuidCacheObject -> NetGuidCacheObject(obj.pathName, netGUID)
+                  is Actor -> NetGuidCacheObject(obj.archetype.pathName, netGUID)
+                  else -> NetGuidCacheObject("", netGUID)
+                }
         objectLoop[netGUID] = cacheObject
         debugln { "register obj:$obj" }
     }

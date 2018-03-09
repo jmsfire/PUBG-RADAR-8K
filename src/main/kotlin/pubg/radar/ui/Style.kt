@@ -3,7 +3,7 @@ package pubg.radar.ui
 import com.badlogic.gdx.graphics.Color
 import pubg.radar.mapWidth
 
-const val initialWindowWidth = 800f
+const val initialWindowWidth = 1000f
 const val windowToMapUnit = mapWidth / initialWindowWidth
 const val runSpeed = 6.3 * 100 //6.3m/s
 const val visionRadius = mapWidth / 4

@@ -124,7 +124,7 @@ class Sniffer {
             logLevel = LogLevel.Off
             val handle = nif.openLive(snapLen, mode, timeout)
             val filter = when (sniffOption) {
-                PortFilter -> "udp src portrange 7000-8999 or udp[4:2] = 52"
+                PortFilter -> "udp"
                 PPTPFilter -> "ip[9]=47"
             }
             handle.setFilter(filter, OPTIMIZE)
@@ -135,8 +135,8 @@ class Sniffer {
                         val ip = packet[IpPacket::class.java]
                         val udp = udp_payload(packet) ?: return@loop
                         val raw = udp.payload.rawData
-                        if (raw.size == 44)
-                            parseSelfLocation(raw)
+                        if (udp.header.dstPort.valueAsInt() in 7000..7999)
+                            proc_raw_packet(raw, false)
                         else if (udp.header.srcPort.valueAsInt() in 7000..7999)
                             proc_raw_packet(raw)
                     } catch (e: Exception) {
@@ -156,8 +156,8 @@ class Sniffer {
                             val packet = handle.nextPacket ?: break
                             val udp = udp_payload(packet) ?: continue
                             val raw = udp.payload.rawData
-                            if (raw.size == 44)
-                                parseSelfLocation(raw)
+                            if (udp.header.dstPort.valueAsInt() in 7000..7999)
+                                proc_raw_packet(raw, false)
                             else if (udp.header.srcPort.valueAsInt() in 7000..7999)
                                 proc_raw_packet(raw)
                         } catch (e: IndexOutOfBoundsException) {
@@ -165,7 +165,7 @@ class Sniffer {
                         } catch (e: NotOpenException) {
                             break
                         }
-                        Thread.sleep(1)
+                        Thread.sleep(2)
                     }
                 }
             }

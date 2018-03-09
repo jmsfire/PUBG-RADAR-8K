@@ -32,22 +32,22 @@ abstract class Channel(val chIndex: Int, val chType: Int, val client: Boolean = 
             }
     }
 
-    private var bDormant = false
-    private var Closing = false
-    private var InReliable: Int = if (client) globalInReliable else globalOutReliable
-    private var inQueueFirst: Bunch? = null//Incoming data with queued dependencies.
-    private var inQueueLast: Bunch? = null
-    private var numInRec = 0
-    private var inPartialBunch: Bunch? = null// Partial bunch we are receiving (incoming partial bunches are appended to this)
+    var bDormant = false
+    var Closing = false
+    var InReliable: Int = if (client) globalInReliable else globalOutReliable
+    var inQueueFirst: Bunch? = null//Incoming data with queued dependencies.
+    var inQueueLast: Bunch? = null
+    var numInRec = 0
+    var inPartialBunch: Bunch? = null// Partial bunch we are receiving (incoming partial bunches are appended to this)
 
-    private fun ReceiveNetGUIDBunch(bunch: Bunch) {
+    fun ReceiveNetGUIDBunch(bunch: Bunch) {
         val bHasRepLayoutExport = bunch.readBit()
         if (bHasRepLayoutExport) {
             bug { "bHasRepLayoutExport:$bHasRepLayoutExport" }
         }
         guidCache.isExportingNetGUIDBunch = true
         val NumGUIDsInBunch = bunch.readInt32()
-        val MAX_GUID_COUNT = 1228
+        val MAX_GUID_COUNT = 2048
 
         if (NumGUIDsInBunch > MAX_GUID_COUNT) {
             guidCache.isExportingNetGUIDBunch = false
@@ -57,6 +57,7 @@ abstract class Channel(val chIndex: Int, val chType: Int, val client: Boolean = 
             bunch.readObject()
 
         guidCache.isExportingNetGUIDBunch = false
+
     }
 
     fun ReceivedRawBunch(bunch: Bunch) {
@@ -115,7 +116,7 @@ abstract class Channel(val chIndex: Int, val chType: Int, val client: Boolean = 
         }
     }
 
-    private fun ReceivedNextBunch(bunch: Bunch): Boolean {
+    fun ReceivedNextBunch(bunch: Bunch): Boolean {
         /*
         * We received the next bunch. Basically at this point:
         * -We know this is in order if reliable
@@ -145,6 +146,8 @@ abstract class Channel(val chIndex: Int, val chType: Int, val client: Boolean = 
                 if (!bunch.bHasPackageMapExports && bunch.bitsLeft() > 0) {
                     check(bunch.bitsLeft() % 8 == 0)
 //        print("Received New partial bunch. Channel: ${InPartialBunch!!.ChIndex} ChSequence:${InPartialBunch!!.ChSequence} . NumBits Total: ${InPartialBunch!!.bitsLeft()}")
+                } else {
+//          print("Received New partial bunch. It only contained NetGUIDs")
                 }
             } else {
                 /* Merge in next partial bunch to InPartialBunch if:
@@ -156,7 +159,7 @@ abstract class Channel(val chIndex: Int, val chType: Int, val client: Boolean = 
                 val inPartialBunch = inPartialBunch
                 if (inPartialBunch != null) {
                     val bReliableSequencesMatches = bunch.ChSequence == inPartialBunch.ChSequence + 1
-                    val bUnreliableSequenceMatches = bReliableSequencesMatches || bunch.ChSequence == inPartialBunch.ChSequence
+                    val bUnreliableSequenceMatches = bReliableSequencesMatches || bunch.ChSequence == inPartialBunch.ChSequence;
                     val bSequenceMatches = if (inPartialBunch.bReliable) bReliableSequencesMatches else bUnreliableSequenceMatches
 
                     if (!inPartialBunch.bPartialFinal && bSequenceMatches && inPartialBunch.bReliable == bunch.bReliable) {
@@ -173,7 +176,7 @@ abstract class Channel(val chIndex: Int, val chType: Int, val client: Boolean = 
                         inPartialBunch.ChSequence = bunch.ChSequence
 
                         if (bunch.bPartialFinal) {
-                            //check(!bunch.bHasPackageMapExports) // Shouldn't have these, they only go in initial partial export bunches
+                            check(!bunch.bHasPackageMapExports) // Shouldn't have these, they only go in initial partial export bunches
                             HandleBunch = inPartialBunch
 
                             inPartialBunch.bPartialFinal = true
@@ -212,12 +215,13 @@ abstract class Channel(val chIndex: Int, val chType: Int, val client: Boolean = 
         return false
     }
 
-    private fun ReceivedSequencedBunch(bunch: Bunch): Boolean {
+    fun ReceivedSequencedBunch(bunch: Bunch): Boolean {
         if (!Closing || bunch.bOpen) {
             Closing = false
             try {
                 ReceivedBunch(bunch)
             } catch (e: IndexOutOfBoundsException) {
+
             } catch (e: Exception) {
                 e.printStackTrace()
             }
