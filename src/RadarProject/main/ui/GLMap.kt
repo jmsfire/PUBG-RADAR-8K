@@ -1085,7 +1085,7 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
                                 2.toFloat() / 2, 2.toFloat() / 2,
                                 2.toFloat(), 2.toFloat(),
                                 iconScale / 2, iconScale / 2,
-                                dir * -1, 0, 0, 128, 128, false, false
+                                dir * -1, 0, 0, 64, 64, false, false
                         )
                         val v_x = actor!!.velocity.x
                         val v_y = actor.velocity.y
@@ -1157,7 +1157,7 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
                         val (sx, sy) = Vector2(x, y).mapToWindow()
                         if (isTeamMate(actor)) {
                             spriteBatch.draw(
-                                    player,
+                                    teamplayer,
                                     sx, windowHeight - sy - 2, 4.toFloat() / 2,
                                     4.toFloat() / 2, 4.toFloat(), 4.toFloat(), playersize, playersize,
                                     dir * -1, 0, 0, 64, 64, true, false)
