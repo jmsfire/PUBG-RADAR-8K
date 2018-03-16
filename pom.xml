@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>pubg</groupId>
-    <artifactId>pubg-radar</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <groupId>main</groupId>
+    <artifactId>RadarProject</artifactId>
+    <version>FutureX-FORK</version>
 
     <properties>
         <libGdx.version>1.9.6</libGdx.version>
@@ -20,7 +20,7 @@
         <maven.assembly.plugin.version>3.1.0</maven.assembly.plugin.version>
         <maven.compiler.plugin.version>3.7.0</maven.compiler.plugin.version>
         <maven.source.plugin.version>3.0.1</maven.source.plugin.version>
-        <kotlin.version>1.2.21</kotlin.version>
+        <kotlin.version>1.2.30</kotlin.version>
         <kotlin.coroutines>0.21</kotlin.coroutines>
     </properties>
 
@@ -112,6 +112,17 @@
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-test-junit</artifactId>
+            <version>${kotlin.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib-jdk8</artifactId>
+            <version>${kotlin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-test</artifactId>
             <version>${kotlin.version}</version>
             <scope>test</scope>
@@ -119,8 +130,15 @@
     </dependencies>
 
     <build>
-        <sourceDirectory>src/main/kotlin</sourceDirectory>
-        <testSourceDirectory>src/test/kotlin</testSourceDirectory>
+        <sourceDirectory>src/</sourceDirectory>
+
+   <resources>
+     <resource>
+       <directory>src/RadarProject/resources/</directory>
+     </resource>
+   </resources>
+
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -145,13 +163,6 @@
                         <phase>compile</phase>
                         <goals>
                             <goal>compile</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>test-compile</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>test-compile</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -179,7 +190,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>pubg.radar.GameKt</mainClass>
+                            <mainClass>main.GameKt</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
