@@ -5,6 +5,8 @@ import com.badlogic.gdx.math.*
 import main.*
 import main.deserializer.CHTYPE_ACTOR
 import main.deserializer.actor.repl_layout_bunch
+import main.deserializer.cmd.CharacterMoveComp
+import main.deserializer.cmd.VehicleMoveComp
 import main.struct.*
 import main.struct.Archetype.*
 import main.struct.NetGUIDCache.Companion.guidCache
@@ -128,11 +130,15 @@ class ActorChannel(ChIndex: Int, client: Boolean = true): Channel(ChIndex, CHTYP
                         repObj = NetGuidCacheObject("DroppedItemGroupRootComponent", repObj.outerGUID)
                     repl_layout_bunch(outPayload, repObj, actor)
                 }
-                if (!client && repObj?.pathName == "Player") {
-                    selfID = actor.netGUID
-                    while (outPayload.notEnd())
-                        charmovecomp(outPayload)
-                    VehicleSyncComponent(outPayload)
+                if (!client) {
+                    when {
+                        actor.isVehicle ->
+                            VehicleMoveComp(actor, outPayload)
+                        actor.isACharacter && repObj?.pathName == "Player" -> {
+                            selfID = actor.netGUID
+                            CharacterMoveComp(outPayload)
+                        }
+                    }
                 }
 
             } catch (e: Exception) {

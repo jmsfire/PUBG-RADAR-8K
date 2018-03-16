@@ -43,18 +43,16 @@ object PlayerStateCMD : GameListener {
 
     fun process(actor: Actor, bunch: Bunch, repObj: NetGuidCacheObject?, waitingHandle: Int, data: HashMap<String, Any?>): Boolean {
         with(bunch) {
+            //      println(waitingHandle)
             when (waitingHandle) {
                 1 -> {
                     val bHidden = readBit()
-//          println("bHidden=$bHidden")
                 }
                 2 -> {
                     val bReplicateMovement = readBit()
-//          println("bHidden=$bReplicateMovement")
                 }
                 3 -> {
                     val bTearOff = readBit()
-//          println("bHidden=$bTearOff")
                 }
                 4 -> {
                     val role = readInt(ROLE_MAX)
@@ -71,6 +69,7 @@ object PlayerStateCMD : GameListener {
                 }
                 16 -> {
                     val score = propertyFloat()
+//          println("score=$score")
                 }
                 17 -> {
                     val ping = propertyByte()
@@ -78,7 +77,7 @@ object PlayerStateCMD : GameListener {
                 18 -> {
                     val name = propertyString()
                     playerNames[actor.netGUID] = name
-                    //   println("${actor.netGUID} playerID=$name")
+//          println("${actor.netGUID} playerID=$name")
                 }
                 19 -> {
                     val playerID = propertyInt()
@@ -156,7 +155,6 @@ object PlayerStateCMD : GameListener {
                 39 -> {
                     val TotalMovedDistanceMeter = propertyFloat()
                     selfStateID = actor.netGUID//only self will get this update
-//          selfID = actor.netGUID//only self will get this update
                 }
                 40 -> {
                     val TotalGivenDamages = propertyFloat()

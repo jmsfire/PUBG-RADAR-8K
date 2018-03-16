@@ -1,10 +1,11 @@
 @file:Suppress("NAME_SHADOWING")
 
 package main.ui
-
-//import main.sniffer.Sniffer.Companion.preDirection
-//import main.sniffer.Sniffer.Companion.preSelfCoords
-//import main.sniffer.Sniffer.Companion.selfCoords
+import com.badlogic.gdx.graphics.Color.*
+import com.badlogic.gdx.graphics.GL20.GL_TEXTURE_2D
+import com.badlogic.gdx.graphics.Texture.TextureFilter.*
+import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL13.GL_CLAMP_TO_BORDER
 import com.badlogic.gdx.ApplicationListener
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input.Buttons.LEFT
@@ -45,7 +46,6 @@ import main.struct.Actor
 import main.struct.Archetype
 import main.struct.Archetype.*
 import main.struct.NetworkGUID
-import main.struct.VehicleSyncComponent
 import main.struct.cmd.ActorCMD.actorHealth
 import main.struct.cmd.ActorCMD.actorWithPlayerState
 import main.struct.cmd.ActorCMD.playerStateToActor
@@ -120,9 +120,9 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
 	
     private lateinit var spriteBatch: SpriteBatch
     private lateinit var shapeRenderer: ShapeRenderer
-    private lateinit var mapErangelTiles: MutableMap<String, MutableMap<String, MutableMap<String, Texture>>>
-    private lateinit var mapMiramarTiles: MutableMap<String, MutableMap<String, MutableMap<String, Texture>>>
-    private lateinit var mapTiles: MutableMap<String, MutableMap<String, MutableMap<String, Texture>>>
+	lateinit var mapErangel: Texture
+	lateinit var mapMiramar: Texture
+	private lateinit var DaMap: Texture
     private lateinit var iconImages: Icons
     private lateinit var corpseboximage: Texture
     private lateinit var airdropimage: Texture
@@ -167,11 +167,6 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
     private lateinit var compaseFont: BitmapFont
     private lateinit var compaseFontShadow: BitmapFont
     private lateinit var littleFontShadow: BitmapFont
-
-
-    private val tileZooms = listOf("256", "512", "1024", "2048", "4096")
-    private val tileRowCounts = listOf(1, 2, 4, 8, 16)
-    private val tileSizes = listOf(819200f, 409600f, 204800f, 102400f, 51200f)
 
     private val layout = GlyphLayout()
     private var windowWidth = initialWindowWidth
@@ -384,27 +379,20 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
         buggy = Texture(Gdx.files.internal("images/buggy.png"))
         grenade = Texture(Gdx.files.internal("images/grenade.png"))
         iconImages = Icons(Texture(Gdx.files.internal("images/item-sprites.png")), 64)
-        mapErangelTiles = mutableMapOf()
-        mapMiramarTiles = mutableMapOf()
         var cur = 0
-        tileZooms.forEach {
-            mapErangelTiles[it] = mutableMapOf()
-            mapMiramarTiles[it] = mutableMapOf()
-            for (i in 1..tileRowCounts[cur]) {
-                val y = if (i < 10) "0$i" else "$i"
-                mapErangelTiles[it]?.set(y, mutableMapOf())
-                mapMiramarTiles[it]?.set(y, mutableMapOf())
-                for (j in 1..tileRowCounts[cur]) {
-                    val x = if (j < 10) "0$j" else "$j"
-                    mapErangelTiles[it]!![y]?.set(x, Texture(Gdx.files.internal("tiles/Erangel/$it/${it}_${y}_$x.png")))
-                    mapMiramarTiles[it]!![y]?.set(x, Texture(Gdx.files.internal("tiles/Miramar/$it/${it}_${y}_$x.png")))
-                }
-            }
-            cur++
-        }
-        mapTiles = mapErangelTiles
 
-
+		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, floatArrayOf(bgColor.r, bgColor.g, bgColor.b, bgColor.a))
+		mapErangel = Texture(Gdx.files.internal("maps/Erangel.png"), null, true).apply {
+			setFilter(MipMap, Linear)
+			Gdx.gl.glTexParameterf(glTarget, GL20.GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER.toFloat())
+			Gdx.gl.glTexParameterf(glTarget, GL20.GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER.toFloat())
+		}
+		mapMiramar = Texture(Gdx.files.internal("maps/Miramar.png"), null, true).apply {
+			setFilter(MipMap, Linear)
+			Gdx.gl.glTexParameterf(glTarget, GL20.GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER.toFloat())
+			Gdx.gl.glTexParameterf(glTarget, GL20.GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER.toFloat())
+		}
+		
         val generatorHub = FreeTypeFontGenerator(Gdx.files.internal("font/AGENCYFB.TTF"))
         val paramHub = FreeTypeFontParameter()
         paramHub.characters = DEFAULT_CHARS
@@ -477,10 +465,11 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
     }
 
     override fun render() {
+		Gdx.gl.glClearColor(bgColor.r, bgColor.g, bgColor.b, bgColor.a)
         Gdx.gl.glClearColor(0.417f, 0.417f, 0.417f, 0f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         if (gameStarted)
-            mapTiles = if (isErangel) mapErangelTiles else mapMiramarTiles
+            DaMap = if (isErangel) mapErangel else mapMiramar
         else return
         val currentTime = System.currentTimeMillis()
         // Maybe not needed, could be draw error
@@ -492,47 +481,12 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
 
         val (selfX, selfY) = selfCoords
 
-        //val selfDir = Vector2(selfX, selfY).sub(preSelfCoords)
-        //if (selfDir.len() < 1e-8)
-        //  selfDir.set(preDirection)
-
         //move camera
         camera.position.set(selfX + screenOffsetX, selfY + screenOffsetY, 0f)
         camera.update()
-        val cameraTileScale = Math.max(windowWidth, windowHeight) / camera.zoom
-        val useScale: Int
-        useScale = when {
-			cameraTileScale > 8192 -> 5
-            cameraTileScale > 4096 -> 4
-            cameraTileScale > 2048 -> 3
-            cameraTileScale > 1024 -> 2
-            cameraTileScale > 512 -> 1
-            cameraTileScale > 256 -> 0
-            else -> 0
-        }
-
-        val (tlX, tlY) = Vector2(0f, 0f).windowToMap()
-        val (brX, brY) = Vector2(windowWidth, windowHeight).windowToMap()
-        val tileZoom = tileZooms[useScale]
-        val tileRowCount = tileRowCounts[useScale]
-        val tileSize = tileSizes[useScale]
-
-        val xMin = (tlX.toInt() / tileSize.toInt()).coerceIn(1, tileRowCount)
-        val xMax = ((brX.toInt() + tileSize.toInt()) / tileSize.toInt()).coerceIn(1, tileRowCount)
-        val yMin = (tlY.toInt() / tileSize.toInt()).coerceIn(1, tileRowCount)
-        val yMax = ((brY.toInt() + tileSize.toInt()) / tileSize.toInt()).coerceIn(1, tileRowCount)
+        
         paint(camera.combined) {
-            for (i in yMin..yMax) {
-                val y = if (i < 10) "0$i" else "$i"
-                for (j in xMin..xMax) {
-                    val x = if (j < 10) "0$j" else "$j"
-                    val tileStartX = (j - 1) * tileSize
-                    val tileStartY = (i - 1) * tileSize
-                    draw(mapTiles[tileZoom]!![y]!![x], tileStartX, tileStartY, tileSize, tileSize,
-                            0, 0, 256, 256,
-                            false, true)
-                }
-            }
+            draw(DaMap, 0f, 0f, mapWidth, mapWidth, 0, 0, DaMap.width, DaMap.height, false, true)
         }
 
         shapeRenderer.projectionMatrix = camera.combined
@@ -1484,18 +1438,7 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
         compaseFontShadow.dispose()
 
         var cur = 0
-        tileZooms.forEach {
-            for (i in 1..tileRowCounts[cur]) {
-                val y = if (i < 10) "0$i" else "$i"
-                for (j in 1..tileRowCounts[cur]) {
-                    val x = if (j < 10) "0$j" else "$j"
-                    mapErangelTiles[it]!![y]!![x]!!.dispose()
-                    mapMiramarTiles[it]!![y]!![x]!!.dispose()
-                    mapTiles[it]!![y]!![x]!!.dispose()
-                }
-            }
-            cur++
-        }
+        
         spriteBatch.dispose()
         shapeRenderer.dispose()
     }
