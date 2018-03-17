@@ -8,13 +8,7 @@ import main.struct.Actor
 import main.struct.Bunch
 import main.struct.NetGuidCacheObject
 import main.struct.NetworkGUID
-import main.struct.cmd.CMD.propertyBool
-import main.struct.cmd.CMD.propertyByte
-import main.struct.cmd.CMD.propertyFloat
-import main.struct.cmd.CMD.propertyInt
-import main.struct.cmd.CMD.propertyNetId
-import main.struct.cmd.CMD.propertyObject
-import main.struct.cmd.CMD.propertyString
+import main.struct.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 

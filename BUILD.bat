@@ -1,1 +1,1 @@
-mvn verify install
+mvn verify install > log.txt

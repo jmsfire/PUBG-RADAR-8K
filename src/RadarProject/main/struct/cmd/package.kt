@@ -13,39 +13,16 @@ import java.util.*
 
 typealias cmdProcessor = (Actor, Bunch, NetGuidCacheObject?, Int, HashMap<String, Any?>) -> Boolean
 
-
-object CMD {
-    fun Bunch.propertyBool() = readBit()
-    fun Bunch.propertyFloat() = readFloat()
-    fun Bunch.propertyInt() = readInt32()
-    fun Bunch.propertyByte() = readByte()
-    fun Bunch.propertyName() = readName()
-    fun Bunch.propertyObject() = readObject()
-    fun Bunch.propertyVector() = Vector3(readFloat(), readFloat(), readFloat())
-    fun Bunch.propertyRotator() = Vector3(readFloat(), readFloat(), readFloat())
-    fun Bunch.propertyVector100() = readVector(100, 30)
-    fun Bunch.propertyVectorQ() = readVector(1, 20)
-    fun Bunch.propertyVectorNormal() = readFixedVector(1, 16)
-    fun Bunch.propertyVector10() = readVector(10, 24)
-    fun Bunch.propertyUInt64() = readInt64()
-    fun Bunch.propertyNetId() = if (readInt32() > 0) readString() else ""
-    fun Bunch.repMovement(actor: Actor) {
-        val bSimulatedPhysicSleep = readBit()
-        val bRepPhysics = readBit()
-        actor.location = if (actor.isAPawn)
-            readVector(100, 30)
-        else readVector(1, 24)
-
-        actor.rotation = if (actor.isACharacter)
-            readRotationShort()
-        else readRotation()
-
-        actor.velocity = readVector(1, 24)
-        if (bRepPhysics)
-            readVector(1, 24)
-    }
-
-    fun Bunch.propertyString() = readString()
+fun receiveProperties(bunch: Bunch, repObj: NetGuidCacheObject?, actor: Actor): Boolean {
+    val cmdProcessor = processors[repObj?.pathName ?: return false] ?: return false
+    val data = HashMap<String, Any?>()
+    bunch.readBit()
+    var waitingHandle = 0
+    do {
+        waitingHandle = bunch.readIntPacked()
+    } while (waitingHandle > 0 && cmdProcessor(actor, bunch, repObj, waitingHandle, data) && bunch.notEnd())
+    return waitingHandle == 0
+}
 
     val processors = mapOf<String, cmdProcessor>(
             GameState.name to GameStateCMD::process,
@@ -64,11 +41,10 @@ object CMD {
             Plane.name to APawnCMD::process,
             Player.name to ActorCMD::process,
             Parachute.name to APawnCMD::process,
-            AirDrop.name to APawnCMD::process,
+            AirDrop.name to AirDropComponentCMD::process,
             PlayerState.name to PlayerStateCMD::process,
             Team.name to TeamCMD::process,
             "DroppedItemGroupRootComponent" to DroppedItemGroupRootComponentCMD::process,
             "DroppedItemInteractionComponent" to DroppedItemInteractionComponentCMD::process,
             WeaponProcessor.name to WeaponProcessorCMD::process
     )
-}

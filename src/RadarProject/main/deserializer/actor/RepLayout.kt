@@ -1,4 +1,4 @@
-@file:Suppress("NAME_SHADOWING")
+/*@file:Suppress("NAME_SHADOWING")
 package main.deserializer.actor
 
 import main.info
@@ -15,4 +15,4 @@ fun repl_layout_bunch(bunch: Bunch, repObj: NetGuidCacheObject?, actor: Actor) {
         val waitingHandle = bunch.readIntPacked()
         info { ",<$waitingHandle>" }
     } while (waitingHandle > 0 && cmdProcessor(actor, bunch, repObj, waitingHandle, data) && bunch.notEnd())
-}
+} */

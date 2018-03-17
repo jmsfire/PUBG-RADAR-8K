@@ -10,8 +10,7 @@ import main.struct.Archetype.*
 import main.struct.Bunch
 import main.struct.NetGUIDCache
 import main.struct.NetGuidCacheObject
-import main.struct.cmd.CMD.propertyVector100
-import main.struct.cmd.CMD.repMovement
+import main.struct.*
 
 object APawnCMD {
     fun process(actor: Actor, bunch: Bunch, repObj: NetGuidCacheObject?, waitingHandle: Int, data: HashMap<String, Any?>): Boolean {

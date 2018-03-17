@@ -20,10 +20,10 @@ class Icons(sheet: Texture, size: Int) {
             // 1 Gear
             "Bag2" to arrayOf(0, 1),
             "Bag3" to arrayOf(1, 1),
-            "Arm2" to arrayOf(2, 1),
-            "Arm3" to arrayOf(3, 1),
-            "Helm2" to arrayOf(4, 1),
-            "Helm3" to arrayOf(5, 1),
+            "Armor2" to arrayOf(2, 1),
+            "Armor3" to arrayOf(3, 1),
+            "Helmet2" to arrayOf(4, 1),
+            "Helmet3" to arrayOf(5, 1),
             // 2 Melee
             "Crowbar" to arrayOf(0, 2),
             "Sickle" to arrayOf(1, 2),
@@ -65,7 +65,7 @@ class Icons(sheet: Texture, size: Int) {
             "SCAR-L" to arrayOf(2, 8),
             "HK416" to arrayOf(3, 8),
             "Groza" to arrayOf(4, 8),
-            "Aug" to arrayOf(5, 8),
+            "AUG" to arrayOf(5, 8),
             // 9 Rifles
             "Win94" to arrayOf(0, 9),
             "VSS" to arrayOf(1, 9),

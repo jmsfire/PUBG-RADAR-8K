@@ -8,8 +8,7 @@ import main.register
 import main.struct.Actor
 import main.struct.Bunch
 import main.struct.*
-import main.struct.cmd.CMD.propertyString
-import main.struct.cmd.CMD.propertyVector100
+import main.struct.*
 import java.util.concurrent.ConcurrentHashMap
 
 

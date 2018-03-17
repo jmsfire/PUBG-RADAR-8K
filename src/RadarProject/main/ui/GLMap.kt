@@ -305,13 +305,13 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
             F12 -> drawmenu = drawmenu * -1
 
         // Icon Filter Keybinds
-            NUMPAD_1 -> filterWeapon = filterWeapon * -1
-            NUMPAD_2 -> filterLvl2 = filterLvl2 * -1
-            NUMPAD_3 -> filterHeals = filterHeals * -1
-            NUMPAD_4 -> filterThrow = filterThrow * -1
-            NUMPAD_5 -> filterAttach = filterAttach * -1
-            NUMPAD_6 -> filterScope = filterScope * -1
-            NUMPAD_0 -> filterAmmo = filterAmmo * -1
+            NUMPAD_0 -> filterWeapon = filterWeapon * -1
+			NUMPAD_1 -> filterAttach = filterAttach * -1
+			NUMPAD_2 -> filterScope = filterScope * -1
+			NUMPAD_3 -> filterAmmo = filterAmmo * -1
+			NUMPAD_4 -> filterLvl2 = filterLvl2 * -1
+			NUMPAD_5 -> filterHeals = filterHeals * -1
+			NUMPAD_6 -> filterThrow = filterThrow * -1
 
         // Zoom In/Out || Overrides Max/Min Zoom
             MINUS -> camera.zoom = camera.zoom + 0.00525f
@@ -588,15 +588,6 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
             else
                 espFontShadow.draw(spriteBatch, "[INS] Menu OFF", 270f, windowHeight - 25f)
 
-            val num = nameToggles
-            espFontShadow.draw(spriteBatch, "[F8] Player Info: $num", 270f, windowHeight - 42f)
-
-            val znum = ZoomToggles
-            espFontShadow.draw(spriteBatch, "[Num8] Zoom Toggle: $znum", 40f, windowHeight - 68f)
-
-            val vnum = VehicleInfoToggles
-            espFontShadow.draw(spriteBatch, "[F5] Vehicle Toggles: $vnum", 40f, windowHeight - 85f)
-
 
             val pinDistance = (pinLocation.cpy().sub(selfX, selfY).len() / 100).toInt()
             val (x, y) = pinLocation.mapToWindow()
@@ -615,32 +606,32 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
                 else
                     menuFontOFF.draw(spriteBatch, "Disabled", 187f, windowHeight / 2 + 103f)
 
-                if (filterLvl2 != 1)
+                if (filterAttach != 1)
                     menuFontOn.draw(spriteBatch, "Enabled", 187f, windowHeight / 2 + 85f)
                 else
                     menuFontOFF.draw(spriteBatch, "Disabled", 187f, windowHeight / 2 + 85f)
 
-                if (filterHeals != 1)
+                if (filterScope != 1)
                     menuFontOn.draw(spriteBatch, "Enabled", 187f, windowHeight / 2 + 67f)
                 else
                     menuFontOFF.draw(spriteBatch, "Disabled", 187f, windowHeight / 2 + 67f)
 
-                if (filterThrow != 1)
+                if (filterAmmo != 1)
                     menuFontOn.draw(spriteBatch, "Enabled", 187f, windowHeight / 2 + 49f)
                 else
                     menuFontOFF.draw(spriteBatch, "Disabled", 187f, windowHeight / 2 + 49f)
 
-                if (filterAttach != 1)
+                if (filterLvl2 != 1)
                     menuFontOn.draw(spriteBatch, "Enabled", 187f, windowHeight / 2 + 31f)
                 else
                     menuFontOFF.draw(spriteBatch, "Disabled", 187f, windowHeight / 2 + 31f)
 
-                if (filterScope != 1)
+                if (filterHeals != 1)
                     menuFontOn.draw(spriteBatch, "Enabled", 187f, windowHeight / 2 + 13f)
                 else
                     menuFontOFF.draw(spriteBatch, "Disabled", 187f, windowHeight / 2 + 13f)
 
-                if (filterAmmo != 1)
+                if (filterThrow != 1)
                     menuFontOn.draw(spriteBatch, "Enabled", 187f, windowHeight / 2 + -5f)
                 else
                     menuFontOFF.draw(spriteBatch, "Disabled", 187f, windowHeight / 2 + -5f)
@@ -745,7 +736,7 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
         weaponsToFilter = if (filterWeapon != 1) {
             arrayListOf("")
         } else {
-            arrayListOf("M16A4", "HK416", "Kar98k", "SCAR-L", "AK47", "SKS", "Mini14", "DP28", "UMP", "Vector", "UZI", "Pan")
+            arrayListOf("M16A4", "HK416", "Kar98k", "SCAR-L", "AK47", "SKS", "AUG", "M249", "AWM", "Groza", "M24", "MK14", "Mini14", "DP28", "UMP", "Vector", "UZI", "Pan")
         }
 
         healsToFilter = if (filterHeals != 1) {
@@ -769,34 +760,13 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
         level2Filter = if (filterLvl2 != 1) {
             arrayListOf("")
         } else {
-            arrayListOf("Bag2", "Arm2", "Helm2")
+            arrayListOf("Bag2", "Armor2", "Helmet2")
         }
 
 		uselessToFilter = arrayListOf("AR.Stock", "A.Grip", "U.Ext", "AR.Ext", "S.Ext", "SmokeBomb", "FlashBang", "45mm", "DotSight", "Holosight", "Aimpoint") 
 
         val iconScale = 2f / camera.zoom
         paint(itemCamera.combined) {
-            droppedItemLocation.values
-                    .forEach {
-                        val (x, y) = it._1
-                        val items = it._2
-                        val (sx, sy) = Vector2(x, y).mapToWindow()
-                        val syFix = windowHeight - sy
-
-                        items.forEach {
-                            if ((items !in uselessToFilter && items !in weaponsToFilter && items !in scopesToFilter && items !in attachToFilter && items !in level2Filter
-                                            && items !in ammoToFilter && items !in healsToFilter) && items !in throwToFilter
-                                    && iconScale > 20 && sx > 0 && sx < windowWidth && syFix > 0 && syFix < windowHeight) {
-                                iconImages.setIcon(items)
-
-                                draw(iconImages.icon,
-                                        sx - iconScale / 2, syFix - iconScale / 2,
-                                        iconScale, iconScale)
-                            }
-                        }
-                    }
-
-
             //Draw Corpse Icon
             corpseLocation.values.forEach {
                 val (x, y) = it
@@ -822,14 +792,32 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
                         0, 0, 128, 128,
                         false, true)
             }
+			droppedItemLocation.values
+                    .forEach {
+                        val (x, y) = it._1
+                        val items = it._2
+                        val (sx, sy) = Vector2(x, y).mapToWindow()
+                        val syFix = windowHeight - sy
 
+                        items.forEach {
+                            if ((items !in uselessToFilter && items !in weaponsToFilter && items !in scopesToFilter && items !in attachToFilter && items !in level2Filter
+                                            && items !in ammoToFilter && items !in healsToFilter) && items !in throwToFilter
+                                    && iconScale > 20 && sx > 0 && sx < windowWidth && syFix > 0 && syFix < windowHeight) {
+                                iconImages.setIcon(items)
+
+                                draw(iconImages.icon,
+                                        sx - iconScale / 2, syFix - iconScale / 2,
+                                        iconScale, iconScale)
+                            }
+                        }
+                    }
 
             drawMyself(tuple4(null, selfX, selfY, selfDirection))
             drawPawns(typeLocation)
 
         }
 
-        Gdx.gl.glEnable(GL20.GL_BLEND)
+        /*Gdx.gl.glEnable(GL20.GL_BLEND)
         draw(Line) {
             airDropLocation.values.forEach {
                 val (x, y) = it
@@ -838,7 +826,7 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
                 line(selfCoords, airdropcoords)
             }
             Gdx.gl.glDisable(GL20.GL_BLEND)
-        }
+        }*/
 
 
         val zoom = camera.zoom

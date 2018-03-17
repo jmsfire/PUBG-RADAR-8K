@@ -4,15 +4,16 @@ package main.deserializer.channel
 import com.badlogic.gdx.math.*
 import main.*
 import main.deserializer.CHTYPE_ACTOR
-import main.deserializer.actor.repl_layout_bunch
-import main.deserializer.cmd.CharacterMoveComp
-import main.deserializer.cmd.VehicleMoveComp
+//import main.deserializer.actor.repl_layout_bunch
+import main.struct.CharacterMoveComp
+import main.struct.VehicleMoveComp
 import main.struct.*
 import main.struct.Archetype.*
 import main.struct.NetGUIDCache.Companion.guidCache
 import main.struct.cmd.PlayerStateCMD.selfID
-import main.util.tuple2
+import main.util.*
 import java.util.concurrent.ConcurrentHashMap
+import main.struct.cmd.receiveProperties
 
 class ActorChannel(ChIndex: Int, client: Boolean = true): Channel(ChIndex, CHTYPE_ACTOR, client) {
     companion object: GameListener {
@@ -25,11 +26,15 @@ class ActorChannel(ChIndex: Int, client: Boolean = true): Channel(ChIndex, CHTYP
         val airDropLocation = ConcurrentHashMap<NetworkGUID, Vector3>()
         val droppedItemLocation = ConcurrentHashMap<NetworkGUID, tuple2<Vector2, String>>()
         val droppedItemToItem = ConcurrentHashMap<NetworkGUID, NetworkGUID>()
-        val droppedItemGroup = ConcurrentHashMap<NetworkGUID, ArrayList<NetworkGUID>>()
+        val droppedItemGroup = ConcurrentHashMap<NetworkGUID, DynamicArray<NetworkGUID?>>()
         val droppedItemCompToItem = ConcurrentHashMap<NetworkGUID, NetworkGUID>()
+        val crateitems=ConcurrentHashMap<NetworkGUID,DynamicArray<NetworkGUID?>>()
         val corpseLocation = ConcurrentHashMap<NetworkGUID, Vector3>()
-        val actorHasWeapons=ConcurrentHashMap<NetworkGUID,IntArray>()
-        val weapons = ConcurrentHashMap<Int, Actor>()
+        val actorHasWeapons = ConcurrentHashMap<NetworkGUID, DynamicArray<NetworkGUID?>>()
+        val weapons = ConcurrentHashMap<NetworkGUID, Actor>()
+        val itemBag=ConcurrentHashMap<NetworkGUID,DynamicArray<NetworkGUID?>>()
+
+
 
         override fun onGameOver() {
             actors.clear()
@@ -39,6 +44,7 @@ class ActorChannel(ChIndex: Int, client: Boolean = true): Channel(ChIndex, CHTYP
             droppedItemGroup.clear()
             droppedItemCompToItem.clear()
             droppedItemToItem.clear()
+            crateitems.clear()
             corpseLocation.clear()
             weapons.clear()
             actorHasWeapons.clear()
@@ -74,7 +80,6 @@ class ActorChannel(ChIndex: Int, client: Boolean = true): Channel(ChIndex, CHTYP
         val actor = actor!!
         if (actor.Type == DroppedItem && bunch.bitsLeft() == 0)
             droppedItemLocation.remove(droppedItemToItem[actor.netGUID] ?: return)
-
         while (bunch.notEnd()) {
             //header
             val bHasRepLayout = bunch.readBit()
@@ -97,12 +102,18 @@ class ActorChannel(ChIndex: Int, client: Boolean = true): Channel(ChIndex, CHTYP
                         repObj = _subobj
                     } else {
                         val (classGUID, classObj) = bunch.readObject()//SubOjbectClass,SubObjectClassNetGUID
-                        if (classObj != null && (actor.Type == DroopedItemGroup || actor.Type == DroppedItem)) {
+
+                    // adding some stuff
+
+                        if (classObj != null && (actor.Type == DroopedItemGroup || actor.Type == DroppedItem || actor.Type == AirDrop)) {
                             val sn = Item.isGood(classObj.pathName)
+                            //println("airdrop Items: $itemBag")
                             if (sn != null)
                                 droppedItemLocation[netguid] = tuple2(Vector2(actor.location.x, actor.location.y), sn)
                         }
-                        bugln { "subObjClass:${actor.netGUID} ${actor.archetype.pathName} classObj:$classObj" }
+
+                   //  ---------------------
+
                         if (!classGUID.isValid() || classObj == null)
                             continue
                         val subobj = NetGuidCacheObject(classObj.pathName, classGUID)
@@ -123,12 +134,14 @@ class ActorChannel(ChIndex: Int, client: Boolean = true): Channel(ChIndex, CHTYP
                 val outPayload = bunch.deepCopy(NumPayloadBits)
 
                 info { ",${if (bHasRepLayout) "hasRepLayout" else "noRepLayout"},actor[${actor.netGUID.value}]archetype=${actor.archetype}" }
+                var parseComplete=!bHasRepLayout
                 if (bHasRepLayout) {
                     if (!client)// Server shouldn't receive properties.
                         return
                     if (actor.Type == DroopedItemGroup && repObj?.pathName == "RootComponent")
                         repObj = NetGuidCacheObject("DroppedItemGroupRootComponent", repObj.outerGUID)
-                    repl_layout_bunch(outPayload, repObj, actor)
+                    //repl_layout_bunch(outPayload, repObj, actor)
+                    parseComplete=receiveProperties(outPayload,repObj,actor)
                 }
                 if (!client) {
                     when {
@@ -185,8 +198,8 @@ class ActorChannel(ChIndex: Int, client: Boolean = true): Channel(ChIndex, CHTYP
                     if (client) {
                         actors[netGUID] = this
                         when (Type) {
-                            Weapon -> weapons[netGUID.value] = this
-                            AirDrop -> airDropLocation[netGUID] = location
+                            Weapon -> weapons[netGUID] = this
+                            AirDrop -> airDropLocation[netGUID]=location
                             DeathDropItemPackage -> corpseLocation[netGUID] = location
                             else -> {
                             }

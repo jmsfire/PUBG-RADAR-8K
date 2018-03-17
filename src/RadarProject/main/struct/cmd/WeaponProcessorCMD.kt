@@ -5,12 +5,7 @@ import main.deserializer.ROLE_MAX
 import main.deserializer.channel.ActorChannel.Companion.actorHasWeapons
 import main.deserializer.channel.ActorChannel.Companion.actors
 import main.struct.*
-import main.struct.cmd.CMD.propertyBool
-import main.struct.cmd.CMD.propertyInt
-import main.struct.cmd.CMD.propertyName
-import main.struct.cmd.CMD.propertyObject
-import main.struct.cmd.CMD.propertyVector100
-import main.struct.cmd.CMD.repMovement
+import main.util.DynamicArray
 
 object WeaponProcessorCMD {
     fun process(actor: Actor, bunch: Bunch, repObj: NetGuidCacheObject?, waitingHandle: Int, data: HashMap<String, Any?>): Boolean {
@@ -30,7 +25,7 @@ object WeaponProcessorCMD {
                 5 -> {
                     val (netGUID, _) = readObject()
                     actor.owner = if (netGUID.isValid()) netGUID else null
-//          println("$actor isOwnedBy ${actors[netGUID] ?: netGUID}")
+//          println("$actor isOwnedBy ${ActorChannel.actors[netGUID] ?: netGUID}")
                 }
                 6 -> {
                     repMovement(actor)
@@ -58,13 +53,12 @@ object WeaponProcessorCMD {
                 16 -> {//EquippedWeapons
                     val arraySize = readUInt16()
                     actorHasWeapons.compute(actor.owner!!) { _, equippedWeapons ->
-                        val equippedWeapons = equippedWeapons ?: IntArray(arraySize)
+                        val equippedWeapons = equippedWeapons?.resize(arraySize) ?: DynamicArray(arraySize)
                         var index = readIntPacked()
                         while (index != 0) {
+                            val i = index - 1
                             val (netguid, _) = readObject()
-                            equippedWeapons[index - 1] = netguid.value
-//              if (netguid.isValid())
-//                println("$actor has weapon  [$netguid](${weapons[netguid.value]?.Type})")
+                            equippedWeapons[i] = netguid
                             index = readIntPacked()
                         }
                         equippedWeapons
@@ -73,6 +67,7 @@ object WeaponProcessorCMD {
                 17 -> {//CurrentWeaponIndex
                     val currentWeaponIndex = propertyInt()
 //          println("$actor carry $currentWeaponIndex")
+//          val a = currentWeaponIndex
                 }
                 else -> return false
             }

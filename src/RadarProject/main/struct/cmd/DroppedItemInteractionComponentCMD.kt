@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector2
 import main.deserializer.channel.ActorChannel.Companion.droppedItemLocation
 import main.struct.Actor
 import main.struct.Bunch
-import main.struct.cmd.CMD.propertyVector
+import main.struct.*
 import main.deserializer.channel.ActorChannel.Companion.droppedItemCompToItem
 import main.struct.NetGuidCacheObject
 

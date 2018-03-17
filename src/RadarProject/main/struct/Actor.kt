@@ -37,7 +37,7 @@ enum class Archetype { //order matters, it affects the order of drawing
             archetype.contains("Default__Player") -> Player
             archetype.contains("DroppedItemGroup") -> DroopedItemGroup
             archetype.contains("bike", true) -> TwoSeatBike
-            archetype.contains("sidecart", true) -> ThreeSeatCar
+            archetype.contains("Sidecart", true) -> ThreeSeatCar
             archetype.contains("buggy", true) -> TwoSeatCar
             archetype.contains("dacia", true) -> FourSeatDU
             archetype.contains("uaz", true) -> FourSeatDU

@@ -1,4 +1,4 @@
-package main.deserializer.cmd
+package main.struct
 
 import main.deserializer.shortRotationScale
 import main.struct.*
@@ -14,7 +14,7 @@ fun VehicleMoveComp(actor: Actor, bunch: Bunch) {
   when (repIndex) {
     5 -> {
       if (rpcPayload.readBit()) {
-        val InCorrectionId = rpcPayload.readInt32()
+        val InCorrectionId = rpcPayload.propertyInt()
       }
       if (rpcPayload.readBit()) {
         val clientLoc = rpcPayload.readVector(100, 30)
@@ -77,7 +77,7 @@ fun CharacterMoveComp(bunch: Bunch, client: Boolean = false) {
       if (rpcPayload.readBit()) {
         val view = rpcPayload.readUInt32()
       }
-      
+
       if (rpcPayload.readBit()) {
         val timeStamp = rpcPayload.readFloat()
       }

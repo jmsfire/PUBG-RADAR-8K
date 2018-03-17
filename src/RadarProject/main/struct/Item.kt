@@ -8,6 +8,7 @@ class Item {
         private val category = mapOf(
                 "Attach" to mapOf(
                         "Weapon" to mapOf(
+
                                 "Lower" to mapOf(
                                         "AngledForeGrip" to "A.Grip",
                                         "Foregrip" to "V.Grip"
@@ -56,14 +57,7 @@ class Item {
                                 )
                         )
                 ),
-                "Boost" to mapOf(
-                        "EnergyDrink" to "Drink",
-                        "PainKiller" to "Pain"
-                ),
-                "Heal" to mapOf(
-                        "FirstAid" to "FirstAid",
-                        "MedKit" to "MedKit"
-                ),
+
                 "Weapon" to mapOf(
                         "Grenade" to "Grenade",
                         "SmokeBomb" to "SmokeBomb",
@@ -82,7 +76,22 @@ class Item {
                         "Pan" to "Pan",
                         "SawnOff" to "SawnOff",
                         "UZI" to "UZI",
-                        "G1B" to "G1B"
+                        "G1B" to "G1B",
+                        "AUG" to "AUG",
+                        "Groza" to "Groza",
+                        "AWM" to "AWM",
+                        "M24" to "M24",
+                        "M249" to "M249",
+                        "Mk14" to "Mk14"),
+
+                "Boost" to mapOf(
+                        "EnergyDrink" to "Drink",
+                        "AdrenalineSyringe" to "AdrenalineSyringe",
+                        "PainKiller" to "Pain"
+                ),
+                "Heal" to mapOf(
+                        "FirstAid" to "FirstAid",
+                        "MedKit" to "MedKit"
                 ),
                 "Ammo" to mapOf(
                         "9mm" to "9mm",
@@ -92,26 +101,20 @@ class Item {
                         "300mm" to "300mm"
                 ),
                 "Armor" to mapOf(
-                        "C" to mapOf("01" to mapOf("Lv3" to "Arm3")),
-                        "D" to mapOf("01" to mapOf("Lv2" to "Arm2"))
-                ),
+                        "C" to mapOf("01" to mapOf("Lv3" to "Armor3")),
+                        "D" to mapOf("01" to mapOf("Lv2" to "Armor2"))),
                 "Back" to mapOf(
                         "C" to mapOf(
                                 "01" to mapOf("Lv3" to "Bag3"),
-                                "02" to mapOf("Lv3" to "Bag3")
-                        ),
+                                "02" to mapOf("Lv3" to "Bag3")),
                         "F" to mapOf(
                                 "01" to mapOf("Lv2" to "Bag2"),
-                                "02" to mapOf("Lv2" to "Bag2")
-                        )
-                ),
+                                "02" to mapOf("Lv2" to "Bag2"))),
                 "Head" to mapOf(
                         "F" to mapOf(
-                                "01" to mapOf("Lv2" to "Helm2"),
-                                "02" to mapOf("Lv2" to "Helm2")
-                        ),
-                        "G" to mapOf("01" to mapOf("Lv3" to "Helm3"))
-                )
+                                "01" to mapOf("Lv2" to "Helmet2"),
+                                "02" to mapOf("Lv2" to "Helmet2")),
+                        "G" to mapOf("01" to mapOf("Lv3" to "Helmet3")))
 
         ) as Map<String, Any>
 

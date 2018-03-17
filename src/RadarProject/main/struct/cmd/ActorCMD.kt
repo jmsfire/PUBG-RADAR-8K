@@ -16,18 +16,7 @@ import main.struct.Bunch
 import main.struct.NetGUIDCache.Companion.guidCache
 import main.struct.NetGuidCacheObject
 import main.struct.NetworkGUID
-import main.struct.cmd.CMD.propertyBool
-import main.struct.cmd.CMD.propertyByte
-import main.struct.cmd.CMD.propertyFloat
-import main.struct.cmd.CMD.propertyInt
-import main.struct.cmd.CMD.propertyName
-import main.struct.cmd.CMD.propertyObject
-import main.struct.cmd.CMD.propertyVector
-import main.struct.cmd.CMD.propertyVector10
-import main.struct.cmd.CMD.propertyVector100
-import main.struct.cmd.CMD.propertyVectorNormal
-import main.struct.cmd.CMD.propertyVectorQ
-import main.struct.cmd.CMD.repMovement
+import main.struct.*
 import main.struct.cmd.PlayerStateCMD.selfID
 import java.util.concurrent.ConcurrentHashMap
 
