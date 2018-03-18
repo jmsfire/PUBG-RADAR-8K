@@ -1,5 +1,5 @@
 # PUBG-Radar 
-![Imgur](https://preview.ibb.co/dvnhVH/image.png)
+![Imgur](https://image.ibb.co/gsFrPc/image.png)
 
 ### Скачать скомпилированную версию
 
