@@ -1,13 +1,15 @@
-# PUBG-Radar ![Imgur](https://i.imgur.com/wrclp9L.png)
+# PUBG-Radar ![Imgur](https://preview.ibb.co/dvnhVH/image.png)
 
 ### Скачать скомпилированную версию
 
 https://github.com/FutureXpo/PUBG-RADAR-8K/releases
 
-#Помните, что это апдейт с багами и возможны ошибки в работе
+# Возможны ошибки в работе
 
 ### Небольшая заметка
 >Нельзя фильтровать третий сет брони и пламегаситель на AR
+>Большие иконки airdrop
+>Команда отмечена другим цветом
 
 #### Item Filter - Фильтры:
 * NUMPAD_0 -> Filter Weapon - Показать/Скрыть оружие
