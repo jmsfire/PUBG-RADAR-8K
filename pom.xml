@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>VMRadar</groupId>
-    <artifactId>RadarProject</artifactId>
-    <version>FutureX-FORK</version>
+    <artifactId>VMRadar</artifactId>
+    <version>1.2.1</version>
 
     <properties>
         <libGdx.version>1.9.6</libGdx.version>
