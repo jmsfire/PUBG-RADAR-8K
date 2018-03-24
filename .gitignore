@@ -1,7 +1,6 @@
 target/
 .idea
 logall.txt
-.gitignore
-.gitattributes
-PUBG-RADAR-8K.zip
-log.txt
+*.json
+*.rar
+*.zip

@@ -1,22 +1,21 @@
-# PUBG-Radar ![Imgur](https://i.imgur.com/wrclp9L.png)
+# PUBG-Radar 
+![Imgur](https://image.ibb.co/gsFrPc/image.png)
 
 ### Скачать скомпилированную версию
 
 https://github.com/FutureXpo/PUBG-RADAR-8K/releases
 
-#Помните, что это апдейт с багами и возможны ошибки в работе
-
-### Небольшая заметка
->Нельзя фильтровать третий сет брони и пламегаситель на AR
+# Возможны ошибки в работе
+> При использовании Radar launcher возможны ошибки и остановка программы
 
 #### Item Filter - Фильтры:
-* NUMPAD_0 -> Filter Weapon - Показать/Скрыть оружие
-* NUMPAD_1 -> Filter Attachments - Показать/Скрыть обвесы
-* NUMPAD_2 -> Filter Scopes - Показать/Скрыть прицелы
-* NUMPAD_3 -> Filter Ammo - Показать/Скрыть патроны
-* NUMPAD_4 -> Filter Level 2 - Показать/Скрыть броню второго уровня
-* NUMPAD_5 -> Filter Heals - Показать/Скрыть хилы
-* NUMPAD_6 -> Filter Grenades - Показать/Скрыть гранаты
+* Filter Weapon - Показать/Скрыть оружие
+* Filter Attachments - Показать/Скрыть обвесы
+* Filter Scopes - Показать/Скрыть прицелы
+* Filter Ammo - Показать/Скрыть патроны
+* Filter Level 2 - Показать/Скрыть броню второго уровня
+* Filter Heals - Показать/Скрыть хилы
+* Filter Grenades - Показать/Скрыть гранаты
 
 #### Zooms - Масштаб карты:
 * NUMPAD_8 -> Лут - Поиск машины - Удобное вождение
